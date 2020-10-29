@@ -1,0 +1,80 @@
+---
+title: "Selectivity"
+author: "Marta Cousido"
+date: "29/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## SL50 and SL95 Relevance (Paz data)
+
+```{r}
+library(LBSPR) 
+Pol1 <- new("LB_pars")
+Pol1@Linf <- 98.2 
+Pol1@CVLinf <- 0.1 # by default
+Pol1@L50 <- 42.3
+Pol1@L95 <- 59 # estimated from figure (Alonso-Fernández etal, 2013)
+Pol1@MK <- 0.3/0.182
+Pol1@M <- 0.3 
+Pol1@SL50 <- 47.5
+Pol1@SL95 <- 69
+Pol1@SPR <- 0.4
+Pol1@Walpha <- 0.00001
+Pol1@Wbeta <- 3.0044
+Pol1@BinWidth <- 4
+Pol1@BinMax <- 130
+Pol1@BinMin <- 0
+Pol1@L_units <- "cm"
+
+Len1 <- new("LB_lengths", LB_pars=Pol1, file=("pol89aSPR_MultYr4cm.csv"), dataType="freq",header=TRUE)
+Pol1
+Fit1 <- LBSPRfit(Pol1, Len1,verbose = FALSE)
+
+
+
+Pol1 <- new("LB_pars")
+Pol1@Linf <- 98.2 
+Pol1@CVLinf <- 0.1 # by default
+Pol1@L50 <- 42.3
+Pol1@L95 <- 59 # estimated from figure (Alonso-Fernández etal, 2013)
+Pol1@MK <- 0.3/0.182
+Pol1@M <- 0.3 
+Pol1@SPR <- 0.4
+Pol1@Walpha <- 0.00001
+Pol1@Wbeta <- 3.0044
+Pol1@BinWidth <- 4
+Pol1@BinMax <- 130
+Pol1@BinMin <- 0
+Pol1@L_units <- "cm"
+
+Len1 <- new("LB_lengths", LB_pars=Pol1, file=("pol89aSPR_MultYr4cm.csv"), dataType="freq",header=TRUE)
+Pol1
+Fit2 <- LBSPRfit(Pol1, Len1,verbose = FALSE)
+
+spr1=Fit1@SPR
+spr2=Fit2@SPR
+
+spr1-spr2
+
+
+f1=Fit1@FM
+f2=Fit2@FM
+
+f1-f2
+
+s1        <- data.frame(Fit1@Ests)
+s2   <- data.frame(Fit2@Ests)
+
+s1$SPR-s2$SPR
+
+s1$FM-s2$FM
+
+Fit1@SL50-Fit2@SL50
+Fit1@SL95-Fit2@SL95
+s1$SL50-s2$SL50
+s1$SL95-s2$SL95
+```
