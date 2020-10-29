@@ -516,8 +516,6 @@ legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf
 ### Norway Loster 8c FU2627 Males
 
 
-###Usamos los datos para Nephrops FU2627 de los machos
-
 LH Invariants analysis:
 
 ${M/k}^{LIT}$=2 

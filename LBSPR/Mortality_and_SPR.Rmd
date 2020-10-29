@@ -1,0 +1,306 @@
+---
+title: "Mortality parameters"
+author: "Marta Cousido"
+date: "29/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Checking the need of M when M/k is specified
+
+```{r}
+
+
+library(LBSPR) 
+
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 86
+Hke1Pars@L50 <- 25
+Hke1Pars@L95 <- 28.75
+Hke1Pars@MK <- 1.9 
+Hke1Pars@M <- 0.095 
+Hke1Pars@L_units <- "mm"
+
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:68){
+  for (j in 1:38){
+    if(B[i,j]==TRUE){
+      A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+
+
+
+
+Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
+
+
+
+
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 86
+Hke1Pars@L50 <- 25
+Hke1Pars@L95 <- 28.75
+Hke1Pars@MK <- 1.9 
+Hke1Pars@L_units <- "mm"
+
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:68){
+  for (j in 1:38){
+    if(B[i,j]==TRUE){
+      A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+
+
+
+
+Fit2 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
+
+
+spr1=Fit1@SPR
+spr2=Fit2@SPR
+
+spr1-spr2
+
+
+f1=Fit1@FM
+f2=Fit2@FM
+
+f1-f2
+
+
+
+
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 86
+Hke1Pars@L50 <- 25
+Hke1Pars@L95 <- 28.75
+Hke1Pars@MK <- 1.9 
+Hke1Pars@M<-50
+Hke1Pars@L_units <- "mm"
+
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:68){
+  for (j in 1:38){
+    if(B[i,j]==TRUE){
+      A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+
+
+
+
+Fit3 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
+spr1=Fit1@SPR
+spr3=Fit3@SPR
+
+spr1-spr3
+
+
+f1=Fit1@FM
+f3=Fit3@FM
+
+f1-f3
+
+
+```
+
+
+# Checking the need of M when M/k is specified
+
+```{r}
+
+
+library(LBSPR) 
+
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 86
+Hke1Pars@L50 <- 25
+Hke1Pars@L95 <- 28.75
+Hke1Pars@MK <- 1.9 
+Hke1Pars@M <- 0.095 
+Hke1Pars@L_units <- "mm"
+
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:68){
+  for (j in 1:38){
+    if(B[i,j]==TRUE){
+      A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+
+
+
+
+Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
+
+
+
+
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 86
+Hke1Pars@L50 <- 25
+Hke1Pars@L95 <- 28.75
+Hke1Pars@MK <- 1.9 
+Hke1Pars@M <- 0.095
+Hke1Pars@SPR <- 0.4
+Hke1Pars@L_units <- "mm"
+
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:68){
+  for (j in 1:38){
+    if(B[i,j]==TRUE){
+      A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+
+
+
+
+Fit2 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
+
+
+spr1=Fit1@SPR
+spr2=Fit2@SPR
+
+spr1-spr2
+
+
+f1=Fit1@FM
+f2=Fit2@FM
+
+f1-f2
+
+
+```
+
+## SPR using Álex data
+
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(knitr)
+MyPars <- new("LB_pars")
+MyPars@Species <- "Trisopterus luscus"
+
+# LHT
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "Amat", "Linf", "K", "t0", "Amax")
+LHTs$MKlit1 <-3.111105
+LHTs$MKlit2 <- 1.761846
+LHTs$MK <- 1.5
+
+# 95% probability mature
+# Alonso-Fernánde et al. 2008: Pmat = a+bxTL
+a <- -25.77
+b <- 1.34
+L95 <- (log(0.95/0.05)-a)/b
+
+MyPars@Linf <- as.numeric(as.character(LHTs$Linf))
+MyPars@L50  <- as.numeric(as.character(LHTs$L50 ))
+MyPars@L95  <- L95
+MyPars@MK   <- as.numeric(as.character(LHTs$MKlit2)) 
+MyPars@SPR <- 0.4
+MyPars@L_units <- "cm"
+MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
+                 dataType="raw", header = TRUE)
+Fit1 <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
+
+```
+
+
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(knitr)
+MyPars <- new("LB_pars")
+MyPars@Species <- "Trisopterus luscus"
+
+# LHT
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "Amat", "Linf", "K", "t0", "Amax")
+LHTs$MKlit1 <-3.111105
+LHTs$MKlit2 <- 1.761846
+LHTs$MK <- 1.5
+
+# 95% probability mature
+# Alonso-Fernánde et al. 2008: Pmat = a+bxTL
+a <- -25.77
+b <- 1.34
+L95 <- (log(0.95/0.05)-a)/b
+
+MyPars@Linf <- as.numeric(as.character(LHTs$Linf))
+MyPars@L50  <- as.numeric(as.character(LHTs$L50 ))
+MyPars@L95  <- L95
+MyPars@MK   <- as.numeric(as.character(LHTs$MKlit2)) 
+MyPars@L_units <- "cm"
+MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
+                 dataType="raw", header = TRUE)
+Fit2 <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
+spr1=Fit1@SPR
+spr2=Fit2@SPR
+
+spr1-spr2
+
+
+f1=Fit1@FM
+f2=Fit2@FM
+
+f1-f2
+
+s1        <- data.frame(Fit1@Ests)
+s2   <- data.frame(Fit2@Ests)
+
+s1$SPR-s2$SPR
+
+s1$FM-s2$FM
+
+```
