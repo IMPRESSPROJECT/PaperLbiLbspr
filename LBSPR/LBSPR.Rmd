@@ -24,9 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 6. Juan: Blackspot
 
-
-
-Álex: Pouting
+7. Álex: Pouting
 
 ## Norway Loster 8c FU25 Males and Females
 
@@ -1324,7 +1322,7 @@ sbr1Pars@L_units <- "cm"
 sbrLenFreq1 <- new("LB_lengths", LB_pars=sbr1Pars, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq1@L_units <- sbr1Pars@L_units
 
-Fit1 <- LBSPRfit(sbr1Pars, sbrLenFreq1)
+Fit1 <- LBSPRfit(sbr1Pars, sbrLenFreq1,verbose = FALSE)
 
 
 #Underestimate (M/k*0.75):
@@ -1335,7 +1333,7 @@ sbr1ParsMK@MK <- 0.75*1.42
 sbrLenFreq1MK <- new("LB_lengths", LB_pars=sbr1ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq1MK@L_units <- sbr1ParsMK@L_units
 
-Fit1MK <- LBSPRfit(sbr1ParsMK, sbrLenFreq1MK)
+Fit1MK <- LBSPRfit(sbr1ParsMK, sbrLenFreq1MK,verbose = FALSE)
 
 # Overestimate (M/k*1.25):
 
@@ -1346,7 +1344,7 @@ sbr2ParsMK@MK <- 1.25*1.42
 sbrLenFreq2MK <- new("LB_lengths", LB_pars=sbr2ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq2MK@L_units <- sbr2ParsMK@L_units
 
-Fit2MK <- LBSPRfit(sbr2ParsMK, sbrLenFreq2MK)
+Fit2MK <- LBSPRfit(sbr2ParsMK, sbrLenFreq2MK,verbose = FALSE)
 
 #Default value (M/k=1.5)
 
@@ -1356,7 +1354,7 @@ sbr3ParsMK@MK <- 1.5
 sbrLenFreq3MK <- new("LB_lengths", LB_pars=sbr3ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq3MK@L_units <- sbr3ParsMK@L_units
 
-Fit3MK <- LBSPRfit(sbr3ParsMK, sbrLenFreq3MK)
+Fit3MK <- LBSPRfit(sbr3ParsMK, sbrLenFreq3MK,verbose = FALSE)
 
 #Underestimate (Linf*0.75)
 
@@ -1366,7 +1364,7 @@ sbr1ParsLinf@Linf <- 62*0.75
 sbrLenFreq1Linf <- new("LB_lengths", LB_pars=sbr1ParsLinf, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq1Linf@L_units <- sbr1ParsLinf@L_units
 
-Fit1Linf <- LBSPRfit(sbr1ParsLinf, sbrLenFreq1Linf)
+Fit1Linf <- LBSPRfit(sbr1ParsLinf, sbrLenFreq1Linf,verbose = FALSE)
 
 #Overestimate (Linf*1.25)
 
@@ -1376,7 +1374,7 @@ sbr2ParsLinf@Linf <- 62*1.25
 sbrLenFreq2Linf <- new("LB_lengths", LB_pars=sbr2ParsLinf, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq2Linf@L_units <- sbr2ParsLinf@L_units
 
-Fit2Linf <- LBSPRfit(sbr2ParsLinf, sbrLenFreq2Linf)
+Fit2Linf <- LBSPRfit(sbr2ParsLinf, sbrLenFreq2Linf,verbose = FALSE)
 
 
 smoothEsts1 <- data.frame(Fit1@Ests)
@@ -1443,4 +1441,179 @@ legend("topleft", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.2
        col=c("black", 2:6), pch=19, cex=0.8)
 ```
 
+## Pouting
 
+*Trisopterus luscus* life history traits (LHT).
+
+- MAturity oogive of females from Alonso-Fernandez et al. (2008), $L^{LIT}_{50} = 19.2 cm$, based on histology.
+
+- Growth parameters (Von Bertalanffy) based on Labarta et al. (1982): $L^{LIT}_{inf} = 46.7 cm$;  $K^{LIT} = 0.21$; $t^{LIT}_{0} = 1.27$; $A^{LIT}_{max} = 9 years$.
+
+- Estimates $M/K^{LIT}$ from Then et al. (2015). As reference we will usenatural moratlity estimates using growth parameters: $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$. But also we will try longevity: $M_{nls} = 0.6533320 y^{-1}$; $M_{nls}/K^{LIT} = 3.111105$. We used app [Barefoot Ecologist's Toolbox](http://barefootecologist.com.au/shiny_m).
+
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(knitr)
+MyPars <- new("LB_pars")
+MyPars@Species <- "Trisopterus luscus"
+
+# LHT
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "Amat", "Linf", "K", "t0", "Amax")
+LHTs$MKlit1 <-3.111105
+LHTs$MKlit2 <- 1.761846
+LHTs$MK <- 1.5
+
+# 95% probability mature
+# Alonso-Fernánde et al. 2008: Pmat = a+bxTL
+a <- -25.77
+b <- 1.34
+L95 <- (log(0.95/0.05)-a)/b
+
+MyPars@Linf <- as.numeric(as.character(LHTs$Linf))
+MyPars@L50  <- as.numeric(as.character(LHTs$L50 ))
+MyPars@L95  <- L95
+MyPars@MK   <- as.numeric(as.character(LHTs$MKlit2)) 
+MyPars@SPR <- 0.4
+MyPars@L_units <- "cm"
+```
+
+
+```{r include=FALSE,eval=FALSE}
+library(readr)
+newDat <- read_csv("faneca_ieo.csv")
+
+newDat <- data.frame(do.call(cbind, unstack(newDat)))
+colnames(newDat) <- seq(1999, 2018, 1)
+dim(newDat)
+summary(newDat)
+
+write_csv(newDat, "faneca.csv")
+```
+
+```{r,warning=FALSE,message=FALSE}
+MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
+                 dataType="raw", header = TRUE)
+myFit <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
+
+# M/K = 0.75 x M/K(LIT)
+MyParsMKLow <- MyPars
+MyParsMKLow@MK <- 0.75*MyPars@MK
+MyLengthsMKLow <- new("LB_lengths", LB_pars=MyParsMKLow, file="faneca.csv", 
+                 dataType="raw", header = TRUE)
+MyLengthsMKLow@L_units <- MyParsMKLow@L_units
+myFitMKLow <- LBSPRfit(MyParsMKLow, MyLengthsMKLow,verbose = FALSE)
+
+# M/K = 1.25 x M/K(LIT)
+MyParsMKSup <- MyPars
+MyParsMKSup@MK <- 1.25*MyPars@MK
+MyLengthsMKSup <- new("LB_lengths", LB_pars=MyParsMKSup, file="faneca.csv", 
+                     dataType="raw", header = TRUE)
+MyLengthsMKSup@L_units <- MyParsMKSup@L_units
+myFitMKSup <- LBSPRfit(MyParsMKSup, MyLengthsMKSup,verbose = FALSE)
+
+# M/K = 1.5
+MyParsMK15 <- MyPars
+MyParsMK15@MK <- 1.5
+MyLengthsMK15 <- new("LB_lengths", LB_pars=MyParsMK15, file="faneca.csv", 
+                     dataType="raw", header = TRUE)
+MyLengthsMK15@L_units <- MyParsMK15@L_units
+myFitMK15 <- LBSPRfit(MyParsMK15, MyLengthsMK15,verbose = FALSE)
+
+# M/K = 3.1 (mortality based on longecity; Then et al. 2015)
+MyParsMKnls <- MyPars
+MyParsMKnls@MK <- 3.111105
+MyLengthsMKnls <- new("LB_lengths", LB_pars=MyParsMKnls, file="faneca.csv", 
+                     dataType="raw", header = TRUE)
+MyLengthsMKnls@L_units <- MyParsMKnls@L_units
+myFitMKnls <- LBSPRfit(MyParsMKnls, MyLengthsMKnls,verbose = FALSE)
+
+# Linf = 0.75 x Linf(LIT)
+MyParsLinfLow <- MyPars
+MyParsLinfLow@Linf <- 0.75*MyPars@Linf
+MyLengthsLinfLow <- new("LB_lengths", LB_pars=MyParsLinfLow, file="faneca.csv", 
+                      dataType="raw", header = TRUE)
+MyLengthsLinfLow@L_units <- MyParsLinfLow@L_units
+myFitLinfLow <- LBSPRfit(MyParsLinfLow, MyLengthsLinfLow,verbose = FALSE)
+
+# Linf = 1.25 x Linf(LIT)
+MyParsLinfSup <- MyPars
+MyParsLinfSup@Linf <- 1.25*MyPars@Linf
+MyLengthsLinfSup <- new("LB_lengths", LB_pars=MyParsLinfSup, file="faneca.csv", 
+                      dataType="raw",header = TRUE)
+MyLengthsLinfSup@L_units <- MyParsLinfSup@L_units
+myFitLinfSup <- LBSPRfit(MyParsLinfSup, MyLengthsLinfSup,verbose = FALSE)
+
+smoothEsts1        <- data.frame(myFit@Ests)
+smoothEsts1MK   <- data.frame(myFitMKLow@Ests)
+smoothEsts2MK   <- data.frame(myFitMKSup@Ests)
+smoothEsts3MK   <- data.frame(myFitMK15@Ests)
+smoothEsts4MK   <- data.frame(myFitMKnls@Ests)
+smoothEsts1Linf <- data.frame(myFitLinfLow@Ests)
+smoothEsts2Linf <- data.frame(myFitLinfSup@Ests)
+
+
+spr1     = myFit@SPR
+sprmk1   = myFitMKLow@SPR
+sprmk2   = myFitMKSup@SPR
+sprmk3  = myFitMK15@SPR
+sprmk4   = myFitMKnls@SPR
+sprL1 = myFitLinfLow@SPR
+sprL2 = myFitLinfSup@SPR
+
+fm1   = myFit@FM
+fmmk1   = myFitMKLow@FM
+fmmk2   = myFitMKSup@FM
+fmmk3   = myFitMK15@FM
+fmmk4  = myFitMKnls@FM
+fmL1 = myFitLinfLow@FM
+fmL2= myFitLinfSup@FM
+
+min=min(c(spr1,sprmk1,sprmk2,sprmk3, sprmk4,sprL1,sprL2))
+max=max(c(spr1,sprmk1,sprmk2,sprmk3, sprmk4,sprL1,sprL2))
+
+plot(1999:2018,spr1,ylim=c(min,max),xlab="Year",ylab="SPR estimate",pch=19)
+
+lines(1999:2018, smoothEsts1$SPR, lwd = 1,col="black")
+lines(1999:2018, smoothEsts1MK$SPR, lwd = 1, col=2)
+lines(1999:2018, smoothEsts2MK$SPR, lwd = 1, col=3)
+lines(1999:2018, smoothEsts3MK$SPR, lwd = 1, col=4)
+lines(1999:2018, smoothEsts1Linf$SPR, lwd = 1, col=5)
+lines(1999:2018, smoothEsts2Linf$SPR, lwd = 1 ,col=6)
+lines(1999:2018, smoothEsts4MK$SPR, lwd = 1, col=7)
+
+points(1999:2018, sprmk1,col=2,pch=19)
+points(1999:2018, sprmk2,col=3,pch=19)
+points(1999:2018, sprmk3,col=4,pch=19)
+points(1999:2018, sprL1,col=5,pch=19)
+points(1999:2018, sprL2,col=6, pch=19)
+points(1999:2018, sprmk4,col=7,pch=19)
+
+legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf","MK=3.1"),
+       col=c("black", 2:7), pch=19, cex=0.8)
+
+min=min(c(fm1,fmmk1,fmmk2,fmmk3, fmmk4,fmL1,fmL2))
+max=max(c(fm1,fmmk1,fmmk2,fmmk3, fmmk4,fmL1,fmL2))
+
+plot(1999:2018,fm1,ylim=c(min,max),xlab="Year",ylab="F/M estimate",pch=19)
+
+lines(1999:2018, smoothEsts1$FM, lwd = 1,col="black")
+lines(1999:2018, smoothEsts1MK$FM, lwd = 1,col=2)
+lines(1999:2018, smoothEsts2MK$FM, lwd = 1,col=3)
+lines(1999:2018, smoothEsts3MK$FM, lwd = 1,col=4)
+lines(1999:2018, smoothEsts1Linf$FM, lwd = 1, col=5)
+lines(1999:2018, smoothEsts2Linf$FM, lwd = 1, col=6)
+lines(1999:2018, smoothEsts4MK$FM, lwd = 1,col=7)
+
+points(1999:2018, fmmk1,col=2,pch=19)
+points(1999:2018, fmmk2,col=3,pch=19)
+points(1999:2018, fmmk3,col=4,pch=19)
+points(1999:2018, fmL1,col=5,pch=19)
+points(1999:2018, fmL2,col=6,pch=19)
+points(1999:2018, fmmk4,col=7,pch=19)
+legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf","MK=3.1"),
+       col=c("black", 2:7), pch=19, cex=0.8)
+```
