@@ -1,0 +1,364 @@
+---
+title: "LBI"
+author: "Marta Cousido"
+date: "3/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# LBI all the species together.
+
+1. Isabel: Norway Loster 8c FU25 Males and Females.
+
+2. Yolanda: Norway Loster FU2627 Males and Females.
+
+3. Cristina: Small Spotted Catshark.
+
+4. Margarita: Anchovy.
+
+5. Paz: Pollack
+
+6. Juan: Blackspot Seabream
+
+7. Álex: Pouting
+
+
+## Norway Loster 8c FU25
+
+### Norway Loster 8c FU25 Males
+
+
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE,include=FALSE}
+library(kableExtra)
+library(tidyverse)
+
+# require (rJava)
+# .jinit()
+# .jcall('java.lang.System','S','getProperty','java.version')
+# [1] "1.8.0_211"
+# devtools::install_github('davidgohel/ReporteRsjars')
+# devtools::install_github('davidgohel/ReporteRs')
+library(LBSPR) 
+library(reshape2)
+library(ggplot2) 
+library(tidyr)
+library(ReporteRs) 
+source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R") 
+source("utilities_vpaz.R") 
+```
+
+Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 25.0 mm. Machos, FU 16 (González Herraiz, 2011). Tomo de nuestro muestreo FU 16 y x FUs cercanas.    
+
+$L_{inf}^{LIT}$ = 86.0 mm. Machos, FU 31 (Distribución de tallas, 2014).     
+
+${M/k}^{LIT}$ = 1.9 (Prince et al., 2015). 
+
+  
+```{r  message=FALSE, warning=FALSE}
+
+wal <- read.csv("25_Males_w.csv", stringsAsFactors = FALSE)
+head(wal)
+freq <- read.csv("25_Males.csv",  stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 1, "cm")
+
+lb_tableSH(freq, 1, "mm", linf = 86.0 , lmat = 25.0 , mk_ratio = 1.90 ,wal)
+
+# Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 1, "mm", linf=86.0, lmat=25.0, mk_ratio=0.75*1.9,wal)
+
+# Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 1, "mm", linf=86.0, lmat=25.0, mk_ratio=1.25*1.9,wal)
+# Tercero usando el valor por defecto de 1.5.
+
+lb_tableSH(freq, 1, "m", linf=86.0, lmat=25.0, mk_ratio=1.5,wal)
+
+# Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+
+lb_tableSH(freq, 1, "mm", linf=0.75*86.0, lmat=25.0, mk_ratio=1.9,wal)
+
+# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 1, "mm", linf=1.25*86.0, lmat=25.0, mk_ratio=1.9,wal)
+```
+
+
+
+**Años** | 0.75* ${M/k}^{LIT}$| 1.25* ${M/k}^{LIT}$| 0.75*$L_{inf}^{LIT}$| 1.25*$L_{inf}^{LIT}$| M/k=1.5
+----------------------| ----------------------|----------------------| ----------------------|----------------------|----------------------|
+*2005* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
+*2006* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
+*2007* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
+*2008* | |[<span style="color:green">Lmean/Lopt</span>]&nbsp;[<span style="color:green">Lmean/LF = M</span>]|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
+*2009* |[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/LF = M</span>]| |<span style="color:green">Pmega</span>| | |
+*2010* | |[<span style="color:green">Lmean/Lopt</span>]&nbsp;[<span style="color:green">Lmean/LF = M</span>]|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
+*2011* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
+*2012* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
+*2013* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
+*2014* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
+*2015* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
+*2016* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:orange">Lmean / LF = M</span>]| | |
+*2017* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span>]| | |
+*2018* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span>]| | |
+*2019* | | |<span style="color:orange">Lmean/ LinfLF=M</span>|[<span style="color:orange">Lmax5 / Linf</span>]&nbsp;[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/ LinfLF=M</span>]|[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/ LinfLF=M</span>] |
+
+
+### Norway Loster 8c FU25 Females
+
+La cigala FU 25 females. Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 28.0 mm. Females (Fariña, 1996). Creo que tesis Celso.    
+
+$L_{inf}^{LIT}$ = 71.0 mm. Females (Distribución de tallas, 2010).     
+
+${M/k}^{LIT}$ = 1.9 (Prince, 2015).
+
+  
+```{r  message=FALSE, warning=FALSE}
+
+wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
+freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
+bin_plot(freq, 1, "cm")
+lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
+
+#Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=0.75*1.9,wal)
+
+# Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=1.25*1.9,wal)
+
+# Tercero usando el valor por defecto de 1.5.
+
+lb_tableSH(freq, 1, "m", linf=71.0, lmat=28.0, mk_ratio=1.5,wal)
+
+# Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 1, "mm", linf=0.75*71.0, lmat=28.0, mk_ratio=1.9,wal)
+
+# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 1, "mm", linf=1.25*71.0, lmat=28.0, mk_ratio=1.9,wal)
+```
+
+
+## Norway Loster FU2627 
+
+### Norway Loster FU2627 Males 
+
+Los datos del ciclo vital de Nephrops FU2627 recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 28 mm. Males in FU29 (ICES, 2006).   
+
+$L_{inf}^{LIT}$ = 80 mm. Males FU2627 (Fernández, et al., 1986).     
+
+${M/k}^{LIT}$ =0.2/0150=2 (k 0.150 year-1 y M=0.2 (Fernández, et al., 1986 & Morizur,Y. 1982).
+
+  
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("FU2627_PesosMales_1988_2019_medio.csv", stringsAsFactors = FALSE)
+freq <- read.csv("FU2627_tallasMales_1988_2019.csv", stringsAsFactors = FALSE)
+
+bin_plot(freq, 1, "cm")
+
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=2,wal)
+
+
+# Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=0.75*2,wal)
+
+# Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=1.25*2,wal)
+
+# Tercero usando el valor por defecto de 1.5.
+
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=1.5,wal)
+
+# Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 2, "mm", linf=0.75*80, lmat=28, mk_ratio=2,wal)
+
+# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 2, "mm", linf=1.25*80, lmat=28, mk_ratio=2,wal)
+```
+
+
+
+### Norway Loster FU2627 Females
+
+
+Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 26 mm. Females FU2627 (Fariña, 1996).   
+
+$L_{inf}^{LIT}$ = 65 cm. Females FU2627 (Fernánez et al., 1986).     
+
+${M/k}^{LIT}$ =0.2/0.08=2.5 (k 0.08 year-1 y M=0.2 (Fernánez et al., 1986; Morizur, 1984).
+
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("FU2627_PesosFemales_1988_2019_medio.csv", stringsAsFactors = FALSE)
+freq <- read.csv("FU2627_tallasFemales_1988_2019.csv", stringsAsFactors = FALSE)
+
+bin_plot(freq, 1, "cm")
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=2.5,wal)
+
+# Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=0.75*2.5,wal)
+
+# Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.25*2.5,wal)
+
+# Tercero usando el valor por defecto de 1.5.
+
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.5,wal)
+
+# Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+lb_tableSH(freq, 2, "mm", linf=0.75*65, lmat=26, mk_ratio=2.5,wal)
+
+# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+lb_tableSH(freq, 2, "mm", linf=1.25*65, lmat=26, mk_ratio=2.5,wal)
+```
+
+## Small Spotted Catshark
+
+
+```{r}
+wal <- read.csv("Pin8c9awal.csv",sep=",")
+head(wal)
+freq <- read.csv("Pin8c9afreq.csv", stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 1, "cm")
+## El escenario de REFERENCIA:
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=1.5,wal)
+## Probamos los escenarios 1) M/k infraestimando (M/k multiplicado por 0.75):
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=0.75*1.5,wal)
+## Probamos los escenarios 2) M/k sobreestimando (M/k multiplicado por 1.25):
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=1.25*1.5,wal)
+
+## Primero infraestimando (Linf Multiplicado por 0.75):
+lb_tableSH(freq, 2, "cm", linf=0.75*75.0, lmat=54.2, mk_ratio=1.5,wal)
+## Segundo sobrestimando (Linf Multiplicado por 1.25):
+lb_tableSH(freq, 2, "cm", linf=1.25*75.0, lmat=54.2, mk_ratio=1.5,wal)
+```
+
+## Anchovy
+
+Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 11.2 cm (Millán 1999)
+
+${M/k}^{LIT}=1.3/0.9$=1.44 
+
+$L_{inf}^{LIT}$=18.95 (k y $L_{inf}$ de Bellido et al. 2000)
+
+M = 1.3 (Razonamiento en WKPELA 2018 report, uso M para la edad 1 $M_1$)
+
+<!-- <!-- L50=11.2 (Millán 1999) --> -->
+
+<!-- L95=13.3  (Millán 1999) -->
+
+
+```{r  message=FALSE, warning=FALSE}
+MK<-1.44
+Linf<-18.95
+Lmat<-11.2
+wal <- read.csv("wal_anchovy_fv.csv", stringsAsFactors = FALSE)
+freq <- read.csv("lengthfreq_anchovy_fv.csv", stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+bin_plot(freq, 3, "cm")
+bin_plot(freq, 4, "cm")
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+
+lb_tableSH(freq, 4, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+
+
+```
+
+
+## Pollack
+
+```{r  message=FALSE, warning=FALSE}
+freq <- read.csv("Pol89afreq.csv", stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 4, "cm")
+wal <- read.csv("Pol89awal.csv", stringsAsFactors = FALSE)
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.648352,wal)
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=0.75*1.648352,wal)
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.25*1.648352,wal)
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.5,wal)
+
+lb_tableSH(freq, 4, "cm", linf=0.75*98.2, lmat=42.3, mk_ratio=1.648352,wal)
+lb_tableSH(freq, 4, "cm", linf=1.25*98.2, lmat=42.3, mk_ratio=1.648352,wal)
+```
+
+## Blackspot Seabream
+
+
+```{r  message=FALSE, warning=FALSE}
+Linf<-62 # Fixed to larger sample from the SoG
+Lmat<-33 # Estimated from Gil (2006) Sex change TL in cm
+
+wal <- read.csv("SBR9_mw.csv", stringsAsFactors = FALSE)
+freq <- read.csv("SBR9_numbers.csv", stringsAsFactors = FALSE)
+Linf<-62
+Lmat<-33
+MK<-1.42
+
+head(freq)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+bin_plot(freq, 3, "cm")
+bin_plot(freq, 4, "cm")
+```
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+
+#1a. Underestimate M/k (*0.75):
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+
+#1b. Overestimate M/k (*1.25):
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+
+#1c. M/k default value (1.5)
+
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+
+#2a. Underestimate Linf (*0.75):
+
+lb_tableSH(freq, 4, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+
+#2b. Overestimate Linf (*1.25):
+
+lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+```
+
+## Pouting
+
+
