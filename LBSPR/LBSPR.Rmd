@@ -60,6 +60,7 @@ Hke1Pars@L_units <- "mm"
 ```{r}
 HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
+
 ```
 
 
@@ -80,7 +81,7 @@ HkeLenFreq1@LData=A
   
 
 
-
+HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
 ```
 
@@ -345,6 +346,7 @@ HkeLenFreq1@L_units <- Hke1Pars@L_units
 
 
 ```{r}
+HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
 ```
 
@@ -547,6 +549,7 @@ NepmalesLenFreq1@L_units <- Nepmales1Pars@L_units
 
 
 ```{r}
+NepmalesLenFreq1
 Fit1 <- LBSPRfit(Nepmales1Pars, NepmalesLenFreq1, verbose = FALSE)
 ```
 
@@ -720,6 +723,7 @@ NepfemalesLenFreq1@L_units <- Nepfemales1Pars@L_units
 
 
 ```{r}
+NepfemalesLenFreq1
 Fit1 <- LBSPRfit(Nepfemales1Pars, NepfemalesLenFreq1,verbose = FALSE)
 ```
 
@@ -890,7 +894,7 @@ PinPars@L_units <- "cm"
 
 PinLenFreq1 <- new("LB_lengths", LB_pars=PinPars, file="Pin8c9afreq.csv", dataType="freq", header=TRUE)
 PinLenFreq1@L_units <- PinPars@L_units
-
+PinLenFreq1
 Fit1 <- LBSPRfit(PinPars, PinLenFreq1,verbose = FALSE)
 
 # Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
@@ -1018,7 +1022,7 @@ Hke1Pars@L_units <- "cm"
 
 HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
-
+HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1,verbose =FALSE)
 
 # Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
@@ -1184,7 +1188,7 @@ Pol1@BinMin <- 0
 Pol1@L_units <- "cm"
 
 Len1 <- new("LB_lengths", LB_pars=Pol1, file=("pol89aSPR_MultYr4cm.csv"), dataType="freq",header=TRUE)
-
+Len1
 Fit1 <- LBSPRfit(Pol1, Len1,verbose = FALSE)
 
 #Underestimate M/k^LIT, multiplying by the factor 0.75:
@@ -1319,7 +1323,7 @@ sbr1Pars@L_units <- "cm"
 
 sbrLenFreq1 <- new("LB_lengths", LB_pars=sbr1Pars, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq1@L_units <- sbr1Pars@L_units
-
+sbrLenFreq1
 Fit1 <- LBSPRfit(sbr1Pars, sbrLenFreq1,verbose = FALSE)
 
 
@@ -1495,6 +1499,7 @@ write_csv(newDat, "faneca.csv")
 ```{r,warning=FALSE,message=FALSE}
 MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
                  dataType="raw", header = TRUE)
+MyLengths
 myFit <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
 
 # M/K = 0.75 x M/K(LIT)

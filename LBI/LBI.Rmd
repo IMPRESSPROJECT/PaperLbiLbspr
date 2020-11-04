@@ -126,6 +126,7 @@ ${M/k}^{LIT}$ = 1.9 (Prince, 2015).
 
 wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
 freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
+head(freq)
 bin_plot(freq, 1, "cm")
 lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
 
@@ -167,7 +168,7 @@ ${M/k}^{LIT}$ =0.2/0150=2 (k 0.150 year-1 y M=0.2 (Fernández, et al., 1986 & Mo
 ```{r  message=FALSE, warning=FALSE}
 wal <- read.csv("FU2627_PesosMales_1988_2019_medio.csv", stringsAsFactors = FALSE)
 freq <- read.csv("FU2627_tallasMales_1988_2019.csv", stringsAsFactors = FALSE)
-
+head(freq)
 bin_plot(freq, 1, "cm")
 
 lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=2,wal)
@@ -209,7 +210,7 @@ ${M/k}^{LIT}$ =0.2/0.08=2.5 (k 0.08 year-1 y M=0.2 (Fernánez et al., 1986; Mori
 ```{r  message=FALSE, warning=FALSE}
 wal <- read.csv("FU2627_PesosFemales_1988_2019_medio.csv", stringsAsFactors = FALSE)
 freq <- read.csv("FU2627_tallasFemales_1988_2019.csv", stringsAsFactors = FALSE)
-
+head(freq)
 bin_plot(freq, 1, "cm")
 lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=2.5,wal)
 
@@ -243,6 +244,8 @@ head(wal)
 freq <- read.csv("Pin8c9afreq.csv", stringsAsFactors = FALSE)
 head(freq)
 bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+bin_plot(freq, 3, "cm")
 ## El escenario de REFERENCIA:
 lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=1.5,wal)
 ## Probamos los escenarios 1) M/k infraestimando (M/k multiplicado por 0.75):
@@ -369,7 +372,7 @@ Parámetros ciclo vital que vamos usar para el *Trisopterus luscus*:
 
 - Para estimar el ratio $M/K^{LIT}$ recurrimos a Then et al. (2015). Como referencia proponemos usar el cáculo de mortalidad natural basado en los parámetros de crecimiento (ver arriba): $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$. Pero además probaremos el método basado en la edad máxima: $M_{nls} = 0.6533320 y^{-1}$; $M_{nls}/K^{LIT} = 3.111105$.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE}
 # usaremos los datos de Von Bertalanfy calculados por Labarta et al. (1982)
 # datos de maduración de Alonso-Fernández et al. (2008)
 # En ambos casos usamos como referencia los datos de hembras
