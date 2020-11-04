@@ -361,4 +361,83 @@ lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
 
 ## Pouting
 
+Parámetros ciclo vital que vamos usar para el *Trisopterus luscus*:
 
+- Usaremos como referencia de talla de primera maduración la referentecia para hembras de Alonso-Fernandez et al. (2008), $L^{LIT}_{50} = 19.2 cm$, basado en histología.
+
+- Los parámetros de crecimiento (Von Bertalanffy) que se recogen en Labarta et al. (1982): $L^{LIT}_{inf} = 46.7 cm$;  $K^{LIT} = 0.21$; $t^{LIT}_{0} = 1.27$; $A^{LIT}_{max} = 9 years$.
+
+- Para estimar el ratio $M/K^{LIT}$ recurrimos a Then et al. (2015). Como referencia proponemos usar el cáculo de mortalidad natural basado en los parámetros de crecimiento (ver arriba): $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$. Pero además probaremos el método basado en la edad máxima: $M_{nls} = 0.6533320 y^{-1}$; $M_{nls}/K^{LIT} = 3.111105$.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# usaremos los datos de Von Bertalanfy calculados por Labarta et al. (1982)
+# datos de maduración de Alonso-Fernández et al. (2008)
+# En ambos casos usamos como referencia los datos de hembras
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "A50", "Linf", "K", "t0", "Amax")
+
+# Usando como referencia Then et al. (2015)
+# proponemos usa 2 principales métodos de cálculo de mortalidad
+# Then_nls y Then_VBGF
+LHTs$MKvbgf <- 1.761846
+LHTs$MKnls <- 3.111105
+LHTs$MK <- 1.5
+
+
+
+library(readr)
+faneca <- read_csv("faneca_ieo.csv")
+sizeDat <- na.omit(faneca %>%
+                    select(TLength, Year))
+anho <- as.character(unique(sort(faneca$Year)))
+sizeDat <- data.frame(sizeDat)
+br = seq(min(sizeDat$TLength), max(sizeDat$TLength) + 1, by = 1)
+ranges = paste(head(br, -1), br[-1], sep = " - ")
+
+sizeDat <- unstack(sizeDat)
+
+freq <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+
+for (i in 1:length(anho)) {
+  freq[, 1] <- head(br, -1)
+  freq[, i + 1] <-
+    hist(
+      sizeDat[[i]],
+      breaks = br - 1,
+      include.lowest = TRUE,
+      plot = FALSE
+    )$counts
+  colnames(freq) <- c("MeanLength", anho)
+}
+
+head(freq)
+
+
+
+
+alfaWL=0.01303439
+betaWL=2.969518
+
+
+
+wal <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+
+for (i in 1:length(anho)) {
+  wal[, 1] <- head(br, -1)
+  wal[, i + 1] <- alfaWL * (head(br, -1) ^ betaWL)
+  colnames(wal) <- c("MeanLength", anho)
+}
+
+
+bin_plot(freq, 1, "cm")
+
+lb_tableSH(freq, 1, "cm", 46.7 , 19.2, 1.761846, wal)
+
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 0.75*1.761846, wal)
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 1.25*1.761846, wal)
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 1.5, wal)
+
+lb_tableSH(freq, 1,"cm",0.75*46.7 , 19.2, 1.761846, wal)
+lb_tableSH(freq, 1,"cm",1.25*46.7 , 19.2, 1.761846, wal)
+
+```
