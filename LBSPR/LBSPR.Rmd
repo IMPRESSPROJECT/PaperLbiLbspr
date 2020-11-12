@@ -221,12 +221,12 @@ HkeLenFreq2Linf@LData=A
 
 #HkeLenFreq1@LMids
 
-HkeLenFreq2Linf@LMids=19:108
+HkeLenFreq2Linf@LMids=seq(19.5,107.5,by=1)
 A=HkeLenFreq2Linf@LData
-for (i in 1:22){
+for (i in 1:21){
 A=rbind(A,HkeLenFreq2Linf@LData[68,])}
 
-A[69:90,1:38]=rep(0,38)
+A[69:89,1:38]=rep(0,38)
 #cbind(A,HkeLenFreq2Linf@LMids)
 
 HkeLenFreq2Linf@LData=A
@@ -417,7 +417,7 @@ HkeLenFreq2Linf@L_units <- Hke2ParsLinf@L_units
 
 #HkeLenFreq1@LMids
 
-HkeLenFreq2Linf@LMids=15:89
+HkeLenFreq2Linf@LMids=seq(15.5,89.5,by=1)
 A=HkeLenFreq2Linf@LData
 for (i in 1:18){
 A=rbind(A,HkeLenFreq2Linf@LData[57,])}
@@ -1020,7 +1020,7 @@ Hke1Pars@MK <- 1.44
 Hke1Pars@M <- 1.3 
 Hke1Pars@L_units <- "cm"
 
-HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
 HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1,verbose =FALSE)
@@ -1030,7 +1030,7 @@ Hke1ParsMK <-Hke1Pars
 Hke1ParsMK@MK <- 0.75*MK
 
 
-HkeLenFreq1MK <- new("LB_lengths", LB_pars=Hke1ParsMK, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq1MK <- new("LB_lengths", LB_pars=Hke1ParsMK, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq1MK@L_units <- Hke1ParsMK@L_units
 
 
@@ -1042,7 +1042,7 @@ Hke2ParsMK <-Hke1Pars
 Hke2ParsMK@MK <- 1.25*MK
 
 
-HkeLenFreq2MK <- new("LB_lengths", LB_pars=Hke2ParsMK, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq2MK <- new("LB_lengths", LB_pars=Hke2ParsMK, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq2MK@L_units <- Hke2ParsMK@L_units
 
 
@@ -1053,7 +1053,7 @@ Fit2MK <- LBSPRfit(Hke2ParsMK, HkeLenFreq2MK,verbose = FALSE)
 Hke3ParsMK <-Hke1Pars
 Hke3ParsMK@MK <- 1.5
 
-HkeLenFreq3MK <- new("LB_lengths", LB_pars=Hke3ParsMK, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq3MK <- new("LB_lengths", LB_pars=Hke3ParsMK, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq3MK@L_units <- Hke3ParsMK@L_units
 
 
@@ -1064,7 +1064,7 @@ Fit3MK <- LBSPRfit(Hke3ParsMK, HkeLenFreq3MK,verbose = FALSE)
 Hke1ParsLinf <-Hke1Pars
 Hke1ParsLinf@Linf <- 0.75*LINF
 
-HkeLenFreq1Linf <- new("LB_lengths", LB_pars=Hke1ParsLinf, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq1Linf <- new("LB_lengths", LB_pars=Hke1ParsLinf, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq1Linf@L_units <- Hke1ParsLinf@L_units
 
 
@@ -1075,9 +1075,9 @@ Fit1Linf <- LBSPRfit(Hke1ParsLinf, HkeLenFreq1Linf,verbose = FALSE)
 Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*LINF
 
-HkeLenFreq2Linf <- new("LB_lengths", LB_pars=Hke2ParsLinf, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
+HkeLenFreq2Linf <- new("LB_lengths", LB_pars=Hke2ParsLinf, file="anchovy.csv", dataType="freq", header=TRUE)
 HkeLenFreq2Linf@L_units <- Hke2ParsLinf@L_units
-HkeLenFreq2Linf@LMids=seq(3.5,24,0.5)#1:130
+HkeLenFreq2Linf@LMids=seq(3.5,24.5,1)#1:130
 rows2add<-length(HkeLenFreq2Linf@LMids)-dim(HkeLenFreq2Linf@LData)[1]
 B<-array(0,dim=c(rows2add,dim(HkeLenFreq2Linf@LData)[2]))
 A=rbind(HkeLenFreq2Linf@LData,B)
@@ -1497,8 +1497,8 @@ write_csv(newDat, "faneca.csv")
 ```
 
 ```{r,warning=FALSE,message=FALSE}
-MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
-                 dataType="raw", header = TRUE)
+MyLengths <- new("LB_lengths", LB_pars=MyPars, file="pouting.csv", 
+                 dataType="freq", header = TRUE)
 MyLengths
 myFit <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
 
