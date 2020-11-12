@@ -92,25 +92,6 @@ lb_tableSH(freq, 1, "mm", linf=1.25*86.0, lmat=25.0, mk_ratio=1.9,wal)
 
 
 
-**Años** | 0.75* ${M/k}^{LIT}$| 1.25* ${M/k}^{LIT}$| 0.75*$L_{inf}^{LIT}$| 1.25*$L_{inf}^{LIT}$| M/k=1.5
-----------------------| ----------------------|----------------------| ----------------------|----------------------|----------------------|
-*2005* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
-*2006* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
-*2007* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
-*2008* | |[<span style="color:green">Lmean/Lopt</span>]&nbsp;[<span style="color:green">Lmean/LF = M</span>]|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
-*2009* |[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/LF = M</span>]| |<span style="color:green">Pmega</span>| | |
-*2010* | |[<span style="color:green">Lmean/Lopt</span>]&nbsp;[<span style="color:green">Lmean/LF = M</span>]|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
-*2011* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
-*2012* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
-*2013* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span> ]| | |
-*2014* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
-*2015* | | |<span style="color:green">Lmax 5 / Linf</span>| | |
-*2016* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:orange">Lmean / LF = M</span>]| | |
-*2017* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span>]| | |
-*2018* | | |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp;[<span style="color:green">Pmega</span>]| | |
-*2019* | | |<span style="color:orange">Lmean/ LinfLF=M</span>|[<span style="color:orange">Lmax5 / Linf</span>]&nbsp;[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/ LinfLF=M</span>]|[<span style="color:orange">Lmean/Lopt</span>]&nbsp;[<span style="color:orange">Lmean/ LinfLF=M</span>] |
-
-
 ### Norway Loster 8c FU25 Females
 
 La cigala FU 25 females. Los datos del ciclo vital recogidos de la literatura son:
@@ -126,6 +107,7 @@ ${M/k}^{LIT}$ = 1.9 (Prince, 2015).
 
 wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
 freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
+head(wal)
 head(freq)
 bin_plot(freq, 1, "cm")
 lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
@@ -169,6 +151,7 @@ ${M/k}^{LIT}$ =0.2/0150=2 (k 0.150 year-1 y M=0.2 (Fernández, et al., 1986 & Mo
 wal <- read.csv("FU2627_PesosMales_1988_2019_medio.csv", stringsAsFactors = FALSE)
 freq <- read.csv("FU2627_tallasMales_1988_2019.csv", stringsAsFactors = FALSE)
 head(freq)
+head(wal)
 bin_plot(freq, 1, "cm")
 
 lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=2,wal)
@@ -211,6 +194,7 @@ ${M/k}^{LIT}$ =0.2/0.08=2.5 (k 0.08 year-1 y M=0.2 (Fernánez et al., 1986; Mori
 wal <- read.csv("FU2627_PesosFemales_1988_2019_medio.csv", stringsAsFactors = FALSE)
 freq <- read.csv("FU2627_tallasFemales_1988_2019.csv", stringsAsFactors = FALSE)
 head(freq)
+head(wal)
 bin_plot(freq, 1, "cm")
 lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=2.5,wal)
 
@@ -283,6 +267,7 @@ Lmat<-11.2
 wal <- read.csv("wal_anchovy_fv.csv", stringsAsFactors = FALSE)
 freq <- read.csv("lengthfreq_anchovy_fv.csv", stringsAsFactors = FALSE)
 head(freq)
+head(wal)
 bin_plot(freq, 1, "cm")
 bin_plot(freq, 2, "cm")
 bin_plot(freq, 3, "cm")
@@ -307,6 +292,7 @@ lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
 ```{r  message=FALSE, warning=FALSE}
 freq <- read.csv("Pol89afreq.csv", stringsAsFactors = FALSE)
 head(freq)
+head(wal)
 bin_plot(freq, 4, "cm")
 wal <- read.csv("Pol89awal.csv", stringsAsFactors = FALSE)
 lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.648352,wal)
@@ -332,6 +318,7 @@ Lmat<-33
 MK<-1.42
 
 head(freq)
+head(wal)
 bin_plot(freq, 1, "cm")
 bin_plot(freq, 2, "cm")
 bin_plot(freq, 3, "cm")
@@ -339,27 +326,27 @@ bin_plot(freq, 4, "cm")
 ```
 
 ```{r  message=FALSE, warning=FALSE}
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
 
 #1a. Underestimate M/k (*0.75):
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
 
 #1b. Overestimate M/k (*1.25):
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
 
 #1c. M/k default value (1.5)
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
 
 #2a. Underestimate Linf (*0.75):
 
-lb_tableSH(freq, 4, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
 
 #2b. Overestimate Linf (*1.25):
 
-lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
 ```
 
 ## Pouting
@@ -413,25 +400,25 @@ for (i in 1:length(anho)) {
   colnames(freq) <- c("MeanLength", anho)
 }
 
+
+
+freq[,1]=seq(10.5,43.5)
+br=seq(10.5,43.5)
 head(freq)
-
-
-
 
 alfaWL=0.01303439
 betaWL=2.969518
 
 
 
-wal <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+wal <- freq
 
-for (i in 1:length(anho)) {
-  wal[, 1] <- head(br, -1)
-  wal[, i + 1] <- alfaWL * (head(br, -1) ^ betaWL)
-  colnames(wal) <- c("MeanLength", anho)
+
+for (i in 2:dim(freq)[2]) {
+  wal[, i] <- alfaWL * ((br) ^ betaWL)
 }
-
-
+colnames(wal) <- c("MeanLength", anho)
+head(wal)
 bin_plot(freq, 1, "cm")
 
 lb_tableSH(freq, 1, "cm", 46.7 , 19.2, 1.761846, wal)
