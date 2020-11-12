@@ -1,52 +1,8 @@
----
-title: "LB-SPR"
-author: "Marta Cousido"
-date: "28/10/2020"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-# LBSPR all the species together.
-
-1. Isabel: Norway Loster 8c FU25 Males and Females.
 
 
-2. Yolanda: Norway Loster FU2627 Males and Females.
+#####################################----> Norway Loster 8c FU25 Males
 
-3. Cristina: Small Spotted Catshark.
-
-4. Margarita: Anchovy.
-
-5. Paz: Pollack
-
-6. Juan: Blackspot seabream
-
-7. Álex: Pouting
-
-## Norway Loster 8c FU25 Males and Females
-
-
-### Norway Loster 8c FU25 Males
-
-```{r}
 library(LBSPR) 
-```
-
-${M/k}^{LIT}$=1.9      (Prince et al., 2015) 
-
-$L_{inf}^{LIT}$=86 (Distribución de tallas, 2014)
-
-M = 0.095 (resultado de dividir M/K 1.90 entre K 0.05 de ICES WKNEPH 16)
-
-L50=25 mm LC (de muestreo de tesis González Herraiz, 2011) 
-
-L95=28.75 mm LC (porque Lmad95% = 1.15*Lmad 50% por Prince WK Vigo Dic 2019)
-
-
-```{r}
 Hke1Pars <- new("LB_pars")
 Hke1Pars@Linf <- 86
 Hke1Pars@L50 <- 25
@@ -54,40 +10,22 @@ Hke1Pars@L95 <- 28.75
 Hke1Pars@MK <- 1.9 
 Hke1Pars@M <- 0.095 
 Hke1Pars@L_units <- "mm"
-```
-
-
-```{r}
 HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Males.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
 
-```
-
-
-
-```{r}
 A=HkeLenFreq1@LData
 B=is.na(HkeLenFreq1@LData)
 
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
 
 HkeLenFreq1@LData=A
-  
-
-
-HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
-```
-
-- Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
-
-```{r results="asis", warning=FALSE}
 Hke1ParsMK <-Hke1Pars
 Hke1ParsMK@MK <- 0.75*1.90
 
@@ -102,7 +40,7 @@ B=is.na(HkeLenFreq1MK@LData)
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
@@ -110,11 +48,7 @@ for (i in 1:68){
 HkeLenFreq1MK@LData=A
 
 Fit1MK <- LBSPRfit(Hke1ParsMK, HkeLenFreq1MK, verbose = FALSE)
-```
 
-- Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
-
-```{r results="asis", warning=FALSE}
 Hke2ParsMK <-Hke1Pars
 Hke2ParsMK@MK <- 1.25*1.90
 
@@ -128,7 +62,7 @@ B=is.na(HkeLenFreq2MK@LData)
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
@@ -137,11 +71,7 @@ HkeLenFreq2MK@LData=A
 
 
 Fit2MK <- LBSPRfit(Hke2ParsMK, HkeLenFreq2MK, verbose = FALSE)
-```
 
-- Tercero usando el valor por defecto de 1.5.
-
-```{r results="asis", warning=FALSE}
 Hke3ParsMK <-Hke1Pars
 Hke3ParsMK@MK <- 1.5
 
@@ -155,7 +85,7 @@ B=is.na(HkeLenFreq3MK@LData)
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
@@ -164,13 +94,9 @@ HkeLenFreq3MK@LData=A
 
 
 Fit3MK <- LBSPRfit(Hke3ParsMK, HkeLenFreq3MK, verbose = FALSE)
-```
 
 
-- Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
 
-
-```{r results="asis", warning=FALSE}
 Hke1ParsLinf <-Hke1Pars
 Hke1ParsLinf@Linf <- 0.75*86
 
@@ -183,7 +109,7 @@ B=is.na(HkeLenFreq1Linf@LData)
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
@@ -192,12 +118,7 @@ HkeLenFreq1Linf@LData=A
 
 
 Fit1Linf <- LBSPRfit(Hke1ParsLinf, HkeLenFreq1Linf, verbose = FALSE)
-```
 
-- Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
-
-
-```{r results="asis", warning=FALSE}
 Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*86
 
@@ -210,7 +131,7 @@ B=is.na(HkeLenFreq2Linf@LData)
 for (i in 1:68){
   for (j in 1:38){
     if(B[i,j]==TRUE){
-    A[i,j]=0}
+      A[i,j]=0}
   }
   
 }
@@ -224,7 +145,7 @@ HkeLenFreq2Linf@LData=A
 HkeLenFreq2Linf@LMids=19:108
 A=HkeLenFreq2Linf@LData
 for (i in 1:22){
-A=rbind(A,HkeLenFreq2Linf@LData[68,])}
+  A=rbind(A,HkeLenFreq2Linf@LData[68,])}
 
 A[69:90,1:38]=rep(0,38)
 #cbind(A,HkeLenFreq2Linf@LMids)
@@ -234,10 +155,6 @@ Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*86
 Fit2Linf <- LBSPRfit(Hke2ParsLinf, HkeLenFreq2Linf, verbose = FALSE)
 
-```
-
-
-```{r}
 
 smoothEsts1 <- data.frame(Fit1@Ests)
 smoothEsts1MK <- data.frame(Fit1MK@Ests)
@@ -257,7 +174,7 @@ sprL2=Fit2Linf@SPR
 min=min(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 max=max(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 
-plot(1982:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19)
+plot(1982:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19,main="Norway Loster 8c FU25 Males")
 
 lines(1982:2019, smoothEsts1$SPR, lwd = 1,col="black")
 lines(1982:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
@@ -273,12 +190,9 @@ points(1982:2019, sprmk3,col=4,pch=19)
 points(1982:2019, sprL1,col=5,pch=19)
 points(1982:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
-
-```{r}
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -290,7 +204,7 @@ fmL2=Fit2Linf@FM
 min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 
-plot(1982:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19)
+plot(1982:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19,main="Norway Loster 8c FU25 Males")
 
 lines(1982:2019, smoothEsts1$FM, lwd = 1,col="black")
 lines(1982:2019, smoothEsts1MK$FM, lwd = 1,col=2)
@@ -306,30 +220,14 @@ points(1982:2019, fmmk3,col=4,pch=19)
 points(1982:2019, fmL1,col=5,pch=19)
 points(1982:2019, fmL2,col=6,pch=19)
 
-legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
+
+#####################################----< Norway Loster 8c FU25 Males
 
 
+#####################################----> Norway Loster 8c FU25 Females
 
-### Norway Loster 8c FU25 Females
-
-${M/k}^{LIT}$=1.9      (Prince et al., 2015) 
-
-$L_{inf}^{LIT}$=71 (Distribución de tallas, 2010)
-
-
-86 machos-25 mad mach=61 mm/3 mmxaño= 20.3333 años. 20+2.5 años mad= 22.5 años vida males FU 25
-K males fu 25 =1/22=0.045. mas o menos 0.05 como en ICES WKNEPH 16
-K females fu 25 => mas o menos la mitad de K males => 0.025 (mismo número de años pero mucho menor crecimiento a partir de la madurez porque tienen huevos 9 meses al año que no permiten muda)
-
-M = 0.0475 (resultado de dividir M/K 1.90 entre K 0.025)(casi mitad qeu machos porque están en las madrigueras casi 9 meses al año)
-
-L50=28 mm LC (Tesis Fariña, 1996) 
-
-L95=32.2 mm LC (porque Lmad95% = 1.15*Lmad 50% por Prince WK Vigo Dic 2019)
-
-```{r}
 Hke1Pars <- new("LB_pars")
 Hke1Pars@Linf <- 71
 Hke1Pars@L50 <- 28
@@ -337,22 +235,12 @@ Hke1Pars@L95 <- 32.2
 Hke1Pars@MK <- 1.9 
 Hke1Pars@M <- 0.0475 
 Hke1Pars@L_units <- "mm"
-```
 
-```{r}
 HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU25_Females.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
-```
 
-
-```{r}
-HkeLenFreq1
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1, verbose = FALSE)
-```
 
-- Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
-
-```{r results="asis", warning=FALSE}
 Hke1ParsMK <-Hke1Pars
 Hke1ParsMK@MK <- 0.75*1.90
 
@@ -362,11 +250,7 @@ HkeLenFreq1MK@L_units <- Hke1ParsMK@L_units
 
 
 Fit1MK <- LBSPRfit(Hke1ParsMK, HkeLenFreq1MK, verbose = FALSE)
-```
 
-- Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
-
-```{r results="asis", warning=FALSE}
 Hke2ParsMK <-Hke1Pars
 Hke2ParsMK@MK <- 1.25*1.90
 
@@ -376,11 +260,8 @@ HkeLenFreq2MK@L_units <- Hke2ParsMK@L_units
 
 
 Fit2MK <- LBSPRfit(Hke2ParsMK, HkeLenFreq2MK, verbose = FALSE)
-```
 
-- Tercero usando el valor por defecto de 1.5.
 
-```{r results="asis", warning=FALSE}
 Hke3ParsMK <-Hke1Pars
 Hke3ParsMK@MK <- 1.5
 
@@ -388,12 +269,7 @@ HkeLenFreq3MK <- new("LB_lengths", LB_pars=Hke3ParsMK, file="FU25_Females.csv", 
 HkeLenFreq3MK@L_units <- Hke3ParsMK@L_units
 
 Fit3MK <- LBSPRfit(Hke3ParsMK, HkeLenFreq3MK, verbose = FALSE)
-```
 
-- Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
-
-
-```{r results="asis", warning=FALSE}
 Hke1ParsLinf <-Hke1Pars
 Hke1ParsLinf@Linf <- 0.75*71
 
@@ -402,12 +278,7 @@ HkeLenFreq1Linf@L_units <- Hke1ParsLinf@L_units
 
 
 Fit1Linf <- LBSPRfit(Hke1ParsLinf, HkeLenFreq1Linf, verbose = FALSE)
-```
 
-- Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
-
-
-```{r results="asis", warning=FALSE}
 Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*71
 
@@ -420,7 +291,7 @@ HkeLenFreq2Linf@L_units <- Hke2ParsLinf@L_units
 HkeLenFreq2Linf@LMids=15:89
 A=HkeLenFreq2Linf@LData
 for (i in 1:18){
-A=rbind(A,HkeLenFreq2Linf@LData[57,])}
+  A=rbind(A,HkeLenFreq2Linf@LData[57,])}
 
 A[58:75,1:38]=rep(0,38)
 #tail(cbind(A,HkeLenFreq2Linf@LMids))
@@ -429,12 +300,6 @@ HkeLenFreq2Linf@LData=A
 Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*71
 Fit2Linf <- LBSPRfit(Hke2ParsLinf, HkeLenFreq2Linf, verbose = FALSE)
-
-```
-
-
-
-```{r}
 
 smoothEsts1 <- data.frame(Fit1@Ests)
 smoothEsts1MK <- data.frame(Fit1MK@Ests)
@@ -454,7 +319,7 @@ sprL2=Fit2Linf@SPR
 min=min(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 max=max(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 
-plot(1982:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19)
+plot(1982:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19,main="Norway Loster 8c FU25 Females")
 
 lines(1982:2019, smoothEsts1$SPR, lwd = 1,col="black")
 lines(1982:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
@@ -470,16 +335,8 @@ points(1982:2019, sprmk3,col=4,pch=19)
 points(1982:2019, sprL1,col=5,pch=19)
 points(1982:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
-
-
-Gráfico F/M:
-
-
-
-```{r}
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -491,7 +348,7 @@ fmL2=Fit2Linf@FM
 min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 
-plot(1982:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19)
+plot(1982:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19,main="Norway Loster 8c FU25 Females")
 
 lines(1982:2019, smoothEsts1$FM, lwd = 1,col="black")
 lines(1982:2019, smoothEsts1MK$FM, lwd = 1,col=2)
@@ -507,31 +364,14 @@ points(1982:2019, fmmk3,col=4,pch=19)
 points(1982:2019, fmL1,col=5,pch=19)
 points(1982:2019, fmL2,col=6,pch=19)
 
-legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
+
+#####################################----< Norway Loster 8c FU25 Females
 
 
-## Norway Loster 8c FU2627 Males and Females
+#####################################-----> Norway Loster 8c FU2627 Males
 
-
-### Norway Loster 8c FU2627 Males
-
-
-LH Invariants analysis:
-
-${M/k}^{LIT}$=2 
-
-$L_{inf}^{LIT}$=80
-
-M = 0.3
-
-L50=28 
-
-L95=32.2 
-
-
-```{r}
 Nepmales1Pars <- new("LB_pars")
 Nepmales1Pars@Linf <- 80
 Nepmales1Pars@L50 <- 28 
@@ -539,24 +379,12 @@ Nepmales1Pars@L95 <- 32.2
 Nepmales1Pars@MK <- 2 
 Nepmales1Pars@M <- 0.3 
 Nepmales1Pars@L_units <- "mm"
-```
 
-
-```{r}
 NepmalesLenFreq1 <- new("LB_lengths", LB_pars=Nepmales1Pars, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
 NepmalesLenFreq1@L_units <- Nepmales1Pars@L_units
-```
 
-
-```{r}
-NepmalesLenFreq1
 Fit1 <- LBSPRfit(Nepmales1Pars, NepmalesLenFreq1, verbose = FALSE)
-```
 
-
-- Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
-
-```{r results="asis", warning=FALSE}
 Nepmales1ParsMK <-Nepmales1Pars
 Nepmales1ParsMK@MK <- 0.75*2
 
@@ -566,11 +394,7 @@ NepmalesLenFreq1MK@L_units <- Nepmales1ParsMK@L_units
 
 
 Fit1MK <- LBSPRfit(Nepmales1ParsMK, NepmalesLenFreq1MK,verbose=FALSE)
-```
 
-- Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
-
-```{r results="asis", warning=FALSE}
 Nepmales2ParsMK <-Nepmales1Pars
 Nepmales2ParsMK@MK <- 1.25*2
 
@@ -580,13 +404,7 @@ NepmalesLenFreq2MK@L_units <- Nepmales2ParsMK@L_units
 
 
 Fit2MK <- LBSPRfit(Nepmales2ParsMK, NepmalesLenFreq2MK,verbose = FALSE)
-```
 
-
-- Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
-
-
-```{r results="asis", warning=FALSE}
 Nepmales1ParsLinf <-Nepmales1Pars
 Nepmales1ParsLinf@Linf <- 0.75*80 
 
@@ -595,12 +413,7 @@ NepmalesLenFreq1Linf@L_units <- Nepmales1ParsLinf@L_units
 
 
 Fit1Linf <- LBSPRfit(Nepmales1ParsLinf, NepmalesLenFreq1Linf,verbose = FALSE)
-```
 
-- Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
-
-
-```{r results="asis", warning=FALSE}
 Nepmales2ParsLinf <-Nepmales1Pars
 Nepmales2ParsLinf@Linf <- 1.25*80
 
@@ -609,11 +422,7 @@ NepmalesLenFreq2Linf@L_units <- Nepmales2ParsLinf@L_units
 
 
 Fit2Linf <- LBSPRfit(Nepmales2ParsLinf, NepmalesLenFreq2Linf, verbose = FALSE)
-```
 
-
-
-```{r}
 
 smoothEsts1 <- data.frame(Fit1@Ests)
 smoothEsts1MK <- data.frame(Fit1MK@Ests)
@@ -632,7 +441,7 @@ sprL2=Fit2Linf@SPR
 min=min(c(spr1,sprmk1,sprmk2,sprL1,sprL2))
 max=max(c(spr1,sprmk1,sprmk2,sprL1,sprL2))
 
-plot(1988:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19)
+plot(1988:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19,main="Norway Loster 8c FU2627 Males")
 
 lines(1988:2019, smoothEsts1$SPR, lwd = 1,col="black")
 lines(1988:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
@@ -646,16 +455,8 @@ points(1988:2019, sprmk2,col=3,pch=19)
 points(1988:2019, sprL1,col=5,pch=19)
 points(1988:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),
-       col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
-```
-
-
-Gráfico F/M:
-
-
-
-```{r}
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),
+#       col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -666,7 +467,7 @@ fmL2=Fit2Linf@FM
 min=min(c(fm1,fmmk1,fmmk2,fmL1,fmL2))
 max=max(c(fm1,fmmk1,fmmk2,fmL1,fmL2))
 
-plot(1988:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19)
+plot(1988:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19,main="Norway Loster 8c FU2627 Males")
 
 lines(1988:2019, smoothEsts1$FM, lwd = 1,col="black")
 lines(1988:2019, smoothEsts1MK$FM, lwd = 1,col=2)
@@ -680,32 +481,14 @@ points(1988:2019, fmmk2,col=3,pch=19)
 points(1988:2019, fmL1,col=5,pch=19)
 points(1988:2019, fmL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),
-       col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),
+#       col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
+
+#####################################-----< Norway Loster 8c FU2627 Males
+
+#####################################------> Norway Loster 8c FU2627 Females
 
 
-
-
-
-
-### Norway Loster 8c FU2627 Females
-
-
-LH Invariants analysis:
-
-
-${M/k}^{LIT}$=2.5 
-
-$L_{inf}^{LIT}$=65
-
-M = 0.2
-
-L50=26 
-
-L95=29.9 
-
-```{r}
 Nepfemales1Pars <- new("LB_pars")
 Nepfemales1Pars@Linf <- 65
 Nepfemales1Pars@L50 <- 26 
@@ -713,24 +496,12 @@ Nepfemales1Pars@L95 <- 29.9
 Nepfemales1Pars@MK <- 2.5 
 Nepfemales1Pars@M <- 0.2 
 Nepfemales1Pars@L_units <- "mm"
-```
 
-
-```{r}
 NepfemalesLenFreq1 <- new("LB_lengths", LB_pars=Nepfemales1Pars, file="FU2627_tallasFemales_1988_2019.csv", dataType="freq", header=TRUE)
 NepfemalesLenFreq1@L_units <- Nepfemales1Pars@L_units
-```
 
-
-```{r}
-NepfemalesLenFreq1
 Fit1 <- LBSPRfit(Nepfemales1Pars, NepfemalesLenFreq1,verbose = FALSE)
-```
 
-
-- Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
-
-```{r results="asis", warning=FALSE}
 Nepfemales1ParsMK <-Nepfemales1Pars
 Nepfemales1ParsMK@MK <- 0.75*2.5
 
@@ -740,11 +511,7 @@ NepfemalesLenFreq1MK@L_units <- Nepfemales1ParsMK@L_units
 
 
 Fit1MK <- LBSPRfit(Nepfemales1ParsMK, NepfemalesLenFreq1MK, verbose = FALSE)
-```
 
-- Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
-
-```{r results="asis", warning=FALSE}
 Nepfemales2ParsMK <-Nepfemales1Pars
 Nepfemales2ParsMK@MK <- 1.25*2.5
 
@@ -754,11 +521,7 @@ NepfemalesLenFreq2MK@L_units <- Nepfemales2ParsMK@L_units
 
 
 Fit2MK <- LBSPRfit(Nepfemales2ParsMK, NepfemalesLenFreq2MK,verbose = FALSE)
-```
 
-- Tercero usando el valor por defecto de 1.5.
-
-```{r results="asis", warning=FALSE}
 Nepfemales3ParsMK <-Nepfemales1Pars
 Nepfemales3ParsMK@MK <- 1.5
 
@@ -767,13 +530,7 @@ NepfemalesLenFreq3MK@L_units <- Nepfemales3ParsMK@L_units
 
 
 Fit3MK <- LBSPRfit(Nepfemales3ParsMK, NepfemalesLenFreq3MK,verbose = FALSE)
-```
 
-
-- Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
-
-
-```{r results="asis", warning=FALSE}
 Nepfemales1ParsLinf <-Nepfemales1Pars
 Nepfemales1ParsLinf@Linf <- 0.75*65 
 
@@ -782,12 +539,7 @@ NepfemalesLenFreq1Linf@L_units <- Nepfemales1ParsLinf@L_units
 
 
 Fit1Linf <- LBSPRfit(Nepfemales1ParsLinf, NepfemalesLenFreq1Linf,verbose = FALSE)
-```
 
-- Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
-
-
-```{r results="asis", warning=FALSE}
 Nepfemales2ParsLinf <-Nepfemales1Pars
 Nepfemales2ParsLinf@Linf <- 1.25*65
 
@@ -796,12 +548,7 @@ NepfemalesLenFreq2Linf@L_units <- Nepfemales2ParsLinf@L_units
 
 
 Fit2Linf <- LBSPRfit(Nepfemales2ParsLinf, NepfemalesLenFreq2Linf,verbose = FALSE)
-```
 
-
-
-
-```{r}
 
 smoothEsts1 <- data.frame(Fit1@Ests)
 smoothEsts1MK <- data.frame(Fit1MK@Ests)
@@ -821,7 +568,7 @@ sprL2=Fit2Linf@SPR
 min=min(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 max=max(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
 
-plot(1988:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19)
+plot(1988:2019,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=19,main="Norway Loster 8c FU2627 Females")
 
 lines(1988:2019, smoothEsts1$SPR, lwd = 1,col="black")
 lines(1988:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
@@ -837,12 +584,9 @@ points(1988:2019, sprmk3,col=4,pch=19)
 points(1988:2019, sprL1,col=5,pch=19)
 points(1988:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
-
-```{r}
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -853,7 +597,7 @@ fmL2=Fit2Linf@FM
 
 min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
-plot(1988:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19)
+plot(1988:2019,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=19,main="Norway Loster 8c FU2627 Females")
 
 lines(1988:2019, smoothEsts1$FM, lwd = 1,col="black")
 lines(1988:2019, smoothEsts1MK$FM, lwd = 1,col=2)
@@ -869,21 +613,14 @@ points(1988:2019, fmmk3,col=4,pch=19)
 points(1988:2019, fmL1,col=5,pch=19)
 points(1988:2019, fmL2,col=6,pch=19)
 
-legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
+
+#####################################------< Norway Loster 8c FU2627 Females
+
+#####################################------> Small Spotted Catshark
 
 
-## Small Spotted Catshark
-
-Los datos del ciclo vital recogidos de trabajos previos en la zona de estudio son:
-${M/k}^{LIT}$=1.5 
-$L_{inf}^{LIT}$=75
-M = 0.3
-L50=54 
-L95=58 
-
-```{r}
 PinPars <- new("LB_pars")
 PinPars@Linf <- 75
 PinPars@L50 <- 54.2 
@@ -894,7 +631,7 @@ PinPars@L_units <- "cm"
 
 PinLenFreq1 <- new("LB_lengths", LB_pars=PinPars, file="Pin8c9afreq.csv", dataType="freq", header=TRUE)
 PinLenFreq1@L_units <- PinPars@L_units
-PinLenFreq1
+
 Fit1 <- LBSPRfit(PinPars, PinLenFreq1,verbose = FALSE)
 
 # Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
@@ -930,7 +667,7 @@ PinLenFreq2Linf@L_units <- Pin2ParsLinf@L_units
 PinLenFreq2Linf@LMids=seq(20.5,94.5,by=1)
 A=PinLenFreq2Linf@LData
 for(i in 1:20){
-A=rbind(A,(PinLenFreq2Linf@LData[55,]))}
+  A=rbind(A,(PinLenFreq2Linf@LData[55,]))}
 A[55:75,1:6]=rep(0,6)
 #tail(cbind(A,PinLenFreq2Linf@LMids))
 PinLenFreq2Linf@LData=A
@@ -967,7 +704,7 @@ points(2014:2019, sprmk2,col=3,pch=19)
 points(2014:2019, sprL1,col=5,pch=19)
 points(2014:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),col=c("black", c(2,3,5,6)), pch=19, cex=0.8)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -990,26 +727,13 @@ points(2014:2019, fmmk2,col=3,pch=19)
 points(2014:2019, fmL1,col=5,pch=19)
 points(2014:2019, fmL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),col=c("black", 2,3,5,6), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","0.75*Linf","1.25*Linf"),col=c("black", 2,3,5,6), pch=19, cex=0.8)
+#
+#####################################------< Small Spotted Catshark
+
+#####################################------> Anchovy
 
 
-## Anchovy
-
-LH Invariants analysis:
-
-${M/k}^{LIT}=1.3/0.9$=1.44 
-
-$L_{inf}^{LIT}$=18.95 (k y $L_{inf}$ de Bellido et al. 2000)
-
-M = 1.3 (Razonamiento en WKPELA 2018 report, uso M para la edad 1 $M_1$)
-
-L50=11.2 (Millán 1999)
-
-L95=13.3  (Millán 1999)
-
-
-```{r}
 MK<-1.44
 LINF<-18.95
 Hke1Pars <- new("LB_pars")
@@ -1022,7 +746,7 @@ Hke1Pars@L_units <- "cm"
 
 HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="lengthfreq_anchovy_fv.csv", dataType="freq", header=TRUE)
 HkeLenFreq1@L_units <- Hke1Pars@L_units
-HkeLenFreq1
+
 Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1,verbose =FALSE)
 
 # Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
@@ -1123,8 +847,8 @@ points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprmk3,col=4,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprL1,col=5,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
 
 fm1=Fit1@FM
@@ -1153,21 +877,13 @@ points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], fmmk3,col=4,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], fmL1,col=5,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], fmL2,col=6,pch=19)
 
-legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
+#####################################------< Anchovy
 
-## Pollack
-
-Life history parameters from literature:
-M/k ratio: ${M/k}^{LIT}=1.648352$ (k 0.182 year-1 y M=0.3 (Alemany, 2017)).
-Linf von Bertalanffy parameter: $L_{inf}^{LIT}$= 98.2 cm For stock in ICES Division 7 (Alemany, 2017).
-Natural mortality, M = 0.3 (Alemany, 2017)
-Length at 50% of Maturity, L50= 42.3 cm (Alonso-Fernández etal, 2013)
-Length at 95% of Maturity, L95= 59 cm
+#####################################------> Pollack
 
 
-```{r}
 
 Pol1 <- new("LB_pars")
 Pol1@Linf <- 98.2 
@@ -1188,7 +904,7 @@ Pol1@BinMin <- 0
 Pol1@L_units <- "cm"
 
 Len1 <- new("LB_lengths", LB_pars=Pol1, file=("pol89aSPR_MultYr4cm.csv"), dataType="freq",header=TRUE)
-Len1
+
 Fit1 <- LBSPRfit(Pol1, Len1,verbose = FALSE)
 
 #Underestimate M/k^LIT, multiplying by the factor 0.75:
@@ -1263,8 +979,8 @@ points(2010:2019, sprmk3,col=4,pch=19)
 points(2010:2019, sprL1,col=5,pch=19)
 points(2010:2019, sprL2,col=6, pch=19)
 
-legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
+#legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
 
 fm1=Fit1@FM
@@ -1292,27 +1008,13 @@ points(2010:2019, fmmk2,col=3,pch=19)
 points(2010:2019, fmmk3,col=4,pch=19)
 points(2010:2019, fmL1,col=5,pch=19)
 points(2010:2019, fmL2,col=6,pch=19)
-legend("topright", legend=c("Reference Case", "0.75*M/k","1.25*M/k","M/k=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topright", legend=c("Reference Case", "0.75*M/k","1.25*M/k","M/k=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
-## Blackspot
+#####################################------< Pollack
 
+#####################################------> Blackspot
 
-
-Life history parameters
-
-M = 0.2 (just guessing)
-k= 0.14 (tag-recapture?)
-M/k=1.42 
-
-Linf=62 (largest sample)
-
-L50=33 (sexual transition)
-L95=35 (females L50)
-
-
-```{r}
 sbr1Pars <- new("LB_pars")
 sbr1Pars@Linf <- 62
 sbr1Pars@L50 <- 33 
@@ -1323,7 +1025,7 @@ sbr1Pars@L_units <- "cm"
 
 sbrLenFreq1 <- new("LB_lengths", LB_pars=sbr1Pars, file="LFreqSBR.csv", dataType="freq", header=TRUE)
 sbrLenFreq1@L_units <- sbr1Pars@L_units
-sbrLenFreq1
+
 Fit1 <- LBSPRfit(sbr1Pars, sbrLenFreq1,verbose = FALSE)
 
 
@@ -1411,8 +1113,8 @@ points(1997:2019, sprmk3,col=4,pch=19)
 points(1997:2019, sprL1,col=5,pch=19)
 points(1997:2019, sprL2,col=6,pch=19)
 
-legend("topright", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
+#legend("topright", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -1439,22 +1141,13 @@ points(1997:2019, fmmk3,col=4,pch=19)
 points(1997:2019, fmL1,col=5,pch=19)
 points(1997:2019, fmL2,col=6,pch=19)
 
-legend("topleft", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#legend("topleft", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+#       col=c("black", 2:6), pch=19, cex=0.8)
+#####################################------< Blackspot
 
-## Pouting
-
-*Trisopterus luscus* life history traits (LHT).
-
-- MAturity oogive of females from Alonso-Fernandez et al. (2008), $L^{LIT}_{50} = 19.2 cm$, based on histology.
-
-- Growth parameters (Von Bertalanffy) based on Labarta et al. (1982): $L^{LIT}_{inf} = 46.7 cm$;  $K^{LIT} = 0.21$; $t^{LIT}_{0} = 1.27$; $A^{LIT}_{max} = 9 years$.
-
-- Estimates $M/K^{LIT}$ from Then et al. (2015). As reference we will usenatural moratlity estimates using growth parameters: $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$. But also we will try longevity: $M_{nls} = 0.6533320 y^{-1}$; $M_{nls}/K^{LIT} = 3.111105$. We used app [Barefoot Ecologist's Toolbox](http://barefootecologist.com.au/shiny_m).
+#####################################------> Pouting
 
 
-```{r,warning=FALSE,message=FALSE}
 library(tidyverse)
 library(lubridate)
 library(kableExtra)
@@ -1481,25 +1174,10 @@ MyPars@L95  <- L95
 MyPars@MK   <- as.numeric(as.character(LHTs$MKlit2)) 
 MyPars@SPR <- 0.4
 MyPars@L_units <- "cm"
-```
 
 
-```{r include=FALSE,eval=FALSE}
-library(readr)
-newDat <- read_csv("faneca_ieo.csv")
-
-newDat <- data.frame(do.call(cbind, unstack(newDat)))
-colnames(newDat) <- seq(1999, 2018, 1)
-dim(newDat)
-summary(newDat)
-
-write_csv(newDat, "faneca.csv")
-```
-
-```{r,warning=FALSE,message=FALSE}
 MyLengths <- new("LB_lengths", LB_pars=MyPars, file="faneca.csv", 
                  dataType="raw", header = TRUE)
-MyLengths
 myFit <- LBSPRfit(MyPars, MyLengths,verbose = FALSE)
 
 # M/K = 0.75 x M/K(LIT)
@@ -1526,6 +1204,14 @@ MyLengthsMK15 <- new("LB_lengths", LB_pars=MyParsMK15, file="faneca.csv",
 MyLengthsMK15@L_units <- MyParsMK15@L_units
 myFitMK15 <- LBSPRfit(MyParsMK15, MyLengthsMK15,verbose = FALSE)
 
+# M/K = 3.1 (mortality based on longecity; Then et al. 2015)
+MyParsMKnls <- MyPars
+MyParsMKnls@MK <- 3.111105
+MyLengthsMKnls <- new("LB_lengths", LB_pars=MyParsMKnls, file="faneca.csv", 
+                     dataType="raw", header = TRUE)
+MyLengthsMKnls@L_units <- MyParsMKnls@L_units
+myFitMKnls <- LBSPRfit(MyParsMKnls, MyLengthsMKnls,verbose = FALSE)
+
 # Linf = 0.75 x Linf(LIT)
 MyParsLinfLow <- MyPars
 MyParsLinfLow@Linf <- 0.75*MyPars@Linf
@@ -1546,6 +1232,7 @@ smoothEsts1        <- data.frame(myFit@Ests)
 smoothEsts1MK   <- data.frame(myFitMKLow@Ests)
 smoothEsts2MK   <- data.frame(myFitMKSup@Ests)
 smoothEsts3MK   <- data.frame(myFitMK15@Ests)
+smoothEsts4MK   <- data.frame(myFitMKnls@Ests)
 smoothEsts1Linf <- data.frame(myFitLinfLow@Ests)
 smoothEsts2Linf <- data.frame(myFitLinfSup@Ests)
 
@@ -1554,6 +1241,7 @@ spr1     = myFit@SPR
 sprmk1   = myFitMKLow@SPR
 sprmk2   = myFitMKSup@SPR
 sprmk3  = myFitMK15@SPR
+sprmk4   = myFitMKnls@SPR
 sprL1 = myFitLinfLow@SPR
 sprL2 = myFitLinfSup@SPR
 
@@ -1561,11 +1249,12 @@ fm1   = myFit@FM
 fmmk1   = myFitMKLow@FM
 fmmk2   = myFitMKSup@FM
 fmmk3   = myFitMK15@FM
+fmmk4  = myFitMKnls@FM
 fmL1 = myFitLinfLow@FM
 fmL2= myFitLinfSup@FM
 
-min=min(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
-max=max(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
+min=min(c(spr1,sprmk1,sprmk2,sprmk3, sprmk4,sprL1,sprL2))
+max=max(c(spr1,sprmk1,sprmk2,sprmk3, sprmk4,sprL1,sprL2))
 
 plot(1999:2018,spr1,ylim=c(min,max),xlab="Year",ylab="SPR estimate",pch=19)
 
@@ -1575,20 +1264,20 @@ lines(1999:2018, smoothEsts2MK$SPR, lwd = 1, col=3)
 lines(1999:2018, smoothEsts3MK$SPR, lwd = 1, col=4)
 lines(1999:2018, smoothEsts1Linf$SPR, lwd = 1, col=5)
 lines(1999:2018, smoothEsts2Linf$SPR, lwd = 1 ,col=6)
-
+lines(1999:2018, smoothEsts4MK$SPR, lwd = 1, col=7)
 
 points(1999:2018, sprmk1,col=2,pch=19)
 points(1999:2018, sprmk2,col=3,pch=19)
 points(1999:2018, sprmk3,col=4,pch=19)
 points(1999:2018, sprL1,col=5,pch=19)
 points(1999:2018, sprL2,col=6, pch=19)
+points(1999:2018, sprmk4,col=7,pch=19)
 
+#legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf","MK=3.1"),
+#       col=c("black", 2:7), pch=19, cex=0.8)
 
-legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-
-min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
-max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
+min=min(c(fm1,fmmk1,fmmk2,fmmk3, fmmk4,fmL1,fmL2))
+max=max(c(fm1,fmmk1,fmmk2,fmmk3, fmmk4,fmL1,fmL2))
 
 plot(1999:2018,fm1,ylim=c(min,max),xlab="Year",ylab="F/M estimate",pch=19)
 
@@ -1598,14 +1287,15 @@ lines(1999:2018, smoothEsts2MK$FM, lwd = 1,col=3)
 lines(1999:2018, smoothEsts3MK$FM, lwd = 1,col=4)
 lines(1999:2018, smoothEsts1Linf$FM, lwd = 1, col=5)
 lines(1999:2018, smoothEsts2Linf$FM, lwd = 1, col=6)
-
+lines(1999:2018, smoothEsts4MK$FM, lwd = 1,col=7)
 
 points(1999:2018, fmmk1,col=2,pch=19)
 points(1999:2018, fmmk2,col=3,pch=19)
 points(1999:2018, fmmk3,col=4,pch=19)
 points(1999:2018, fmL1,col=5,pch=19)
 points(1999:2018, fmL2,col=6,pch=19)
+points(1999:2018, fmmk4,col=7,pch=19)
+#legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf","MK=3.1"),
+#       col=c("black", 2:7), pch=19, cex=0.8)
 
-legend("topright", legend=c("Reference Case", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
-       col=c("black", 2:6), pch=19, cex=0.8)
-```
+#####################################------< Pouting
