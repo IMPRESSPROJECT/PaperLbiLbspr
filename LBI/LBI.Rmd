@@ -152,7 +152,8 @@ wal <- read.csv("FU2627_PesosMales_1988_2019_medio.csv", stringsAsFactors = FALS
 freq <- read.csv("FU2627_tallasMales_1988_2019.csv", stringsAsFactors = FALSE)
 head(freq)
 head(wal)
-bin_plot(freq, 1, "cm")
+bin_plot(freq, 1, "mm")
+bin_plot(freq, 2, "mm")
 
 lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=2,wal)
 
