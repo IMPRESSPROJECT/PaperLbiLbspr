@@ -65,7 +65,7 @@ wal <- read.csv("25_Males_w.csv", stringsAsFactors = FALSE)
 head(wal)
 freq <- read.csv("25_Males.csv",  stringsAsFactors = FALSE)
 head(freq)
-bin_plot(freq, 1, "cm")
+bin_plot(freq, 1, "mm")
 
 lb_tableSH(freq, 1, "mm", linf = 86.0 , lmat = 25.0 , mk_ratio = 1.90 ,wal)
 
@@ -109,7 +109,7 @@ wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
 freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
 head(wal)
 head(freq)
-bin_plot(freq, 1, "cm")
+bin_plot(freq, 1, "mm")
 lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
 
 #Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
@@ -273,15 +273,15 @@ bin_plot(freq, 2, "cm")
 bin_plot(freq, 3, "cm")
 bin_plot(freq, 4, "cm")
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
 
-lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
 
-lb_tableSH(freq, 4, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
-lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 2, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
 
 
 ```
