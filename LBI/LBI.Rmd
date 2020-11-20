@@ -293,9 +293,10 @@ lb_tableSH(freq, 2, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
 ```{r  message=FALSE, warning=FALSE}
 freq <- read.csv("Pol89afreq.csv", stringsAsFactors = FALSE)
 head(freq)
-head(wal)
+
 bin_plot(freq, 4, "cm")
 wal <- read.csv("Pol89awal.csv", stringsAsFactors = FALSE)
+head(wal)
 lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.648352,wal)
 lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=0.75*1.648352,wal)
 lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.25*1.648352,wal)
