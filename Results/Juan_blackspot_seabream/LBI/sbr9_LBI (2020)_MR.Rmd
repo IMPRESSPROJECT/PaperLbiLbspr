@@ -1,0 +1,383 @@
+---
+title: "LBI sensivity analysis in sbr-SoG"
+author: "Juan Gil Herrera"
+date: "20/10/2020"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+If needed, install ReporteRs package. From Rstudio use options "no-multiarch" to avoid installation in R
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+library(tidyverse)
+
+#require (rJava)
+#.jinit()
+#.jcall('java.lang.System','S','getProperty','java.version')
+# [1] "1.8.0_211"
+#devtools::install_github('davidgohel/ReporteRsjars', INSTALL_opts=c("--no-multiarch")) 
+#devtools::install_github('davidgohel/ReporteRs', INSTALL_opts=c("--no-multiarch"))
+```
+
+Loading required packages
+```{r results='hide', message=FALSE, warning=FALSE}
+library(LBSPR) 
+library(reshape2)
+library(ggplot2) 
+library(tidyr)
+library(ReporteRs) 
+source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R") 
+source("utilities_vpaz.R") 
+#setwd("~/Documents/IMPRESS/voraz")
+```
+
+Strait of Gibraltar blackspot seabream life history parameters 
+
+Linf<-62 # Fixed to larger sample from the SoG
+Lmat<-33 # Estimated from Gil (2006) Sex change TL in cm
+
+
+```{r  message=FALSE, warning=FALSE}
+library(reshape2)
+library(lattice)
+#startyear<-1997
+#endyear<-2019
+#Year<-c(startyear:endyear)
+wal <- read.csv("SBR9_mw.csv", stringsAsFactors = FALSE)
+#colnames(wal)<-c("MeanLength",Year)
+freq <- read.csv("SBR9_numbers.csv", stringsAsFactors = FALSE)
+Linf<-62
+Lmat<-33
+MK<-1.42
+#colnames(freq)<-c("MeanLength",Year)
+```
+
+```{r  message=FALSE, warning=FALSE}
+#library(flextable)
+#lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+Ind<- lb_ind(freq, 4, linf=Linf, lmat=Lmat, mk_ratio=MK,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_fv<-((Value_color>0)*1)
+
+```
+
+Sensitivity analysis
+
+1) M/k
+
+1a. Underestimate M/k (*0.75):
+
+```{r results="asis", warning=FALSE}
+#lb_tableSH(freq, 2, "cm", linf=62, lmat=33, mk_ratio=0.75*1.42,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+Ind<- lb_ind(freq, 4, linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_MK75<-((Value_color>0)*1)
+  #Value_color_MK75
+
+
+refMK75<-Value_color_fv-Value_color_MK75
+refMK75summary<-rep(0,length(flex_dat$Year))
+refMK75summary[row(refMK75)[which(refMK75 == 1)]]<-paste((dimnames(refMK75)[[2]]),"R",sep="")[col(refMK75)[which(refMK75 ==1)]]
+refMK75summary[row(refMK75)[which(refMK75 == -1)]]<-paste((dimnames(refMK75)[[2]]),"G",sep="")[col(refMK75)[which(refMK75 ==-1)]]
+
+
+```
+
+1b. Overestimate M/k (*1.25):
+
+```{r results="asis", warning=FALSE}
+#lb_tableSH(freq, 2, "cm", linf=62, lmat=33, mk_ratio=1.25*1.42,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+Ind<- lb_ind(freq, 4, linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  #flex_dat-matriz de referencia positivos verde 1
+  #negativos rojo 0
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_MK125<-((Value_color>0)*1)
+  #positivos verde 1
+  #negativos rojo 0
+refMK125<-Value_color_fv-Value_color_MK125
+NCOLG<-length(unique(col(refMK125)[which(refMK125 ==-1)]))
+NCOLR<-  length(unique(col(refMK125)[which(refMK125 == 1)]))
+
+refMK125summary<-matrix(rep(0,length(flex_dat$Year)*(NCOLG+NCOLR)),ncol=NCOLG+NCOLR)
+if (NCOLR>0){
+  pitu<-rle(col(refMK125)[which(refMK125 ==1)])
+  rows1<-row(refMK125)[which(refMK125 == 1)][1:pitu$lengths[1]]
+refMK125summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][1:pitu$lengths[1]]]
+} else {
+pitu<-rle(col(refMK125)[which(refMK125 ==-1)])
+rows1<-row(refMK125)[which(refMK125 == -1)][1:pitu$lengths[1]]
+refMK125summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][1:pitu$lengths[1]]]
+if (NCOLG>1){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]
+refMK125summary[rows1,2]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]]  
+  }
+
+if (NCOLG>2){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]
+refMK125summary[rows1,3]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]]  
+  }
+
+
+}
+
+
+```
+
+1c. M/k default value (1.5)
+
+```{r results="asis", warning=FALSE}
+#lb_tableSH(freq, 2, "cm", linf=62, lmat=33, mk_ratio=1.5,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+Ind<- lb_ind(freq, 4, linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  #flex_dat-matriz de referencia positivos verde 1
+  #negativos rojo 0
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_MK15<-((Value_color>0)*1)
+  #positivos verde 1
+  #negativos rojo 0
+refMK125<-Value_color_fv-Value_color_MK15
+NCOLG<-length(unique(col(refMK125)[which(refMK125 ==-1)]))
+NCOLR<-  length(unique(col(refMK125)[which(refMK125 == 1)]))
+
+refMK15summary<-matrix(rep(0,length(flex_dat$Year)*(NCOLG+NCOLR)),ncol=NCOLG+NCOLR)
+if (NCOLR>0){
+  pitu<-rle(col(refMK125)[which(refMK125 ==1)])
+  rows1<-row(refMK125)[which(refMK125 == 1)][1:pitu$lengths[1]]
+refMK15summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][1:pitu$lengths[1]]]
+} else {
+pitu<-rle(col(refMK125)[which(refMK125 ==-1)])
+rows1<-row(refMK125)[which(refMK125 == -1)][1:pitu$lengths[1]]
+refMK15summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][1:pitu$lengths[1]]]
+if (NCOLG>1){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]
+refMK15summary[rows1,2]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]]  
+  }
+
+if (NCOLG>2){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]
+refMK15summary[rows1,3]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]]  
+  }
+
+
+}
+
+
+
+```
+
+
+2) Linf
+
+2a. Underestimate Linf (*0.75):
+
+```{r results="asis", warning=FALSE}
+#lb_tableSH(freq, 2, "cm", linf=0.75*62, lmat=33, mk_ratio=1.42,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+Ind<- lb_ind(freq, 4, linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  #flex_dat-matriz de referencia positivos verde 1
+  #negativos rojo 0
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_linf75<-((Value_color>0)*1)
+  #positivos verde 1
+  #negativos rojo 0
+refMK125<-Value_color_fv-Value_color_linf75
+NCOLG<-length(unique(col(refMK125)[which(refMK125 ==-1)]))
+NCOLR<-  length(unique(col(refMK125)[which(refMK125 == 1)]))
+
+reflinf75summary<-matrix(rep(0,length(flex_dat$Year)*(NCOLG+NCOLR)),ncol=NCOLG+NCOLR)
+if (NCOLR>0){
+  pitu<-rle(col(refMK125)[which(refMK125 ==1)])
+  rows1<-row(refMK125)[which(refMK125 == 1)][1:pitu$lengths[1]]
+reflinf75summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][1:pitu$lengths[1]]]
+} else {
+pitu<-rle(col(refMK125)[which(refMK125 ==-1)])
+rows1<-row(refMK125)[which(refMK125 == -1)][1:pitu$lengths[1]]
+reflinf75summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][1:pitu$lengths[1]]]
+if (NCOLG>1){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]
+reflinf75summary[rows1,2]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]]  
+  }
+
+if (NCOLG>2){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]
+reflinf75summary[rows1,3]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]]  
+  }
+
+
+if (NCOLG>3){
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+pitu$lengths[4])]
+reflinf75summary[rows1,4]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+pitu$lengths[4])]]  
+  }
+
+
+
+}
+
+
+
+```
+
+2b. Overestimate Linf (*1.25):
+
+```{r results="asis", warning=FALSE}
+#lb_tableSH(freq, 2, "cm", linf=1.25*62, lmat=33, mk_ratio=1.42,wal)
+lb_tableSH(freq, 4, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+Ind<- lb_ind(freq, 4, linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+ref_level <- c(0, 1, 1, 0.8, 0.3, 0.9, 1)
+  years <- Ind$Year
+  flex_dat <- Ind[c("Year",
+                    "Lc_Lmat", "L25_Lmat", "Lmax5_Linf", "Pmega",
+                    "Lmean_Lopt", "Lmean_LFeM")]
+  flex_dat <- flex_dat[flex_dat$Year %in% years,]
+  flex_dat <- round(flex_dat, 2)
+  #flex_dat-matriz de referencia positivos verde 1
+  #negativos rojo 0
+  Value_color<-flex_dat-matrix(ref_level,nrow=dim(flex_dat)[1],ncol=dim(flex_dat)[2],byrow=T)
+  #Value_color<-Ind
+  Value_color_linf125<-((Value_color>0)*1)
+  #positivos verde 1
+  #negativos rojo 0
+refMK125<-Value_color_fv-Value_color_linf125
+NCOLG<-length(unique(col(refMK125)[which(refMK125 ==-1)]))
+NCOLR<-  length(unique(col(refMK125)[which(refMK125 == 1)]))
+#NCOLR
+#[1] 3
+# NCOLG
+#[1] 0
+
+
+
+reflinf125summary<-matrix(rep(0,length(flex_dat$Year)*(NCOLG+NCOLR)),ncol=NCOLG+NCOLR)
+if (NCOLG>0){#este no lo modifico porque se que no lo va aleer el código debería cambiar 1 por -1 y R por G
+  pitu<-rle(col(refMK125)[which(refMK125 ==1)])
+  rows1<-row(refMK125)[which(refMK125 == 1)][1:pitu$lengths[1]]
+reflinf125summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][1:pitu$lengths[1]]]
+} else {
+pitu<-rle(col(refMK125)[which(refMK125 ==1)])
+rows1<-row(refMK125)[which(refMK125 == 1)][1:pitu$lengths[1]]
+reflinf125summary[rows1,1]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][1:pitu$lengths[1]]]
+if (NCOLR>1){
+rows1<-row(refMK125)[which(refMK125 == 1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]
+reflinf125summary[rows1,2]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][(pitu$lengths[1]+1):(pitu$lengths[1]+pitu$lengths[2])]]  
+  }
+
+if (NCOLR>2){
+rows1<-row(refMK125)[which(refMK125 == 1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]
+reflinf125summary[rows1,3]<-paste((dimnames(refMK125)[[2]]),"R",sep="")[col(refMK125)[which(refMK125 ==1)][(pitu$lengths[1]+pitu$lengths[2]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3])]]  
+  }
+
+
+if (NCOLR>3){#este no lo cambio porque se que el código no pasa por aquí
+rows1<-row(refMK125)[which(refMK125 == -1)][(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+pitu$lengths[4])]
+reflinf125summary[rows1,4]<-paste((dimnames(refMK125)[[2]]),"G",sep="")[col(refMK125)[which(refMK125 ==-1)][(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+1):(pitu$lengths[1]+pitu$lengths[2]+pitu$lengths[3]+pitu$lengths[4])]]  
+  }
+
+
+
+}
+
+```
+
+
+Summary table
+
+Para sacar conclusiones del estudio realizado necesitamos resumir toda la información en una única tabla.
+
+## Debemos indicar para cada año y escenario si algún indicador a cambiado su color con respecto al escenario de referencia. Si ha cambiado debemos escribir su nombre en la tabla en el color al que ha cambiado.
+
+
+```{r results="asis", warning=FALSE}
+library(formattable)
+dt<-cbind(refMK75comp=refMK75summary,refMK125comp=apply(refMK125summary,1,paste,collapse=" "),reflinf75comp=apply(reflinf75summary,1,paste,collapse=" "),reflinf125comp=apply(reflinf125summary,1,paste,collapse=" "),refMK15comp=apply(refMK15summary,1,paste,collapse=" "))
+
+#dt<-data.frame(dt) %>% 
+ # mutate(funs(str_replace_all(.,"0" , "   ")))
+dt<-cbind(Year=flex_dat$Year,dt)
+dt[,2:6] <- ifelse(
+  grepl("R",dt[,2:6],fixed=TRUE),
+  cell_spec(dt[,2:6], color = "red", bold = T),
+  cell_spec(dt[,2:6], color = "green", bold = T))
+
+  kbl(dt, escape = F)%>%
+  kable_paper("hover", full_width = F) %>%
+  column_spec(6, width = "4cm") %>% kable_styling()
+  
+
+
+```
+
+
+
+<!-- **Years** | 0.75* ${M/k}$| 1.25* ${M/k}$| 0.75*${Linf}$| 1.25*${Linf}$| M/k=1.5 -->
+<!-- ----------------------| ----------------------|----------------------| ----------------------|----------------------|----------------------| -->
+<!-- *1997* | | | | | | -->
+<!-- *1998* | | | | | | -->
+<!-- *1999* | | | | | | -->
+<!-- *2000* | | | | | | -->
+<!-- *2001* | | | | | | -->
+<!-- *2002* | | | | | | -->
+<!-- *2003* | | | | | | -->
+<!-- *2004* | | | | | | -->
+<!-- *2005* | | | | | | -->
+<!-- *2006* | | | | | | -->
+<!-- *2007* | | | | | | -->
+<!-- *2008* | | | | | | -->
+<!-- *2009* | | | | | | -->
+<!-- *2010* | | | <span style="color:green">Lmax 5 / Linf</span>| | | -->
+<!-- *2011* | <span style="color:orange">Lmean/Lopt</span>| |[<span style="color:green">Lmax 5 / Linf</span>]&nbsp; [<span style="color:green">Pmega</span>]&nbsp;[<span style="color:green">Lmean / LF = M</span>]|<span style="color:orange">Lmean / Lopt</span>| | -->
+<!-- *2012* | <span style="color:orange">Lmean/Lopt</span>| <span style="color:green">Lmean/LF = M</span>|[<span style="color:green">Lmax 5 / Linf</span> ]&nbsp; [<span style="color:green">Pmega</span> ]&nbsp;[<span style="color:green">Lmean / LF = M</span>]|<span style="color:orange">Lmean / Lopt</span> -->
+<!-- | | -->
+<!-- *2013* | |[<span style="color:green">Lmean/Lopt</span> ]&nbsp;[<span style="color:green">Lmean/LF = M</span>]| [<span style="color:green">Lmax 5 / Linf</span> ]&nbsp;[<span style="color:green">Pmega</span> ]&nbsp; [<span style="color:green">Lmean / Lopt</span> ]&nbsp;[<span style="color:green">Lmean / LF = M</span>]| | | -->
+<!-- *2014* | |<span style="color:green">Lmean/Lopt</span>|[<span style="color:green">Lmax 5 / Linf</span> ]&nbsp;[<span style="color:green">Pmega</span> ]&nbsp;[<span style="color:green">Lmean / Lopt</span>]|<span style="color:orange">Lmean / LF = M</span>| | -->
+<!-- *2015* | |<span style="color:green">Lmean/LF = M</span>|[<span style="color:green">Lmax 5 / Linf</span> ]&nbsp;[<span style="color:green">Lmean / Lopt</span> ]&nbsp;[<span style="color:green">Lmean / LF = M</span>]| | | -->
+<!-- *2016* | | | [<span style="color:green">Lmax 5 / Linf</span> ]&nbsp;[<span style="color:green">Lmean / Lopt</span> ]&nbsp;[<span style="color:green">Lmean / LF = M</span>]| | | -->
+<!-- *2017* |<span style="color:orange">Lmean/LF = M</span> | |[<span style="color:green">Lmax 5 / Linf</span> ]&nbsp; [<span style="color:green">Pmega</span> ]&nbsp; [<span style="color:green">Lmean / Lopt</span>]| <span style="color:orange">Lmean / LF = M</span>| | -->
+<!-- *2018* | |<span style="color:green">Lmean/Lopt</span>| [<span style="color:green">Pmega</span> ]&nbsp;[<span style="color:green">Lmean / Lopt</span>]|<span style="color:orange">Lmax5 / Linf</span>| | -->
+<!-- *2019*| | | | | | -->
+

@@ -1,0 +1,123 @@
+---
+title: "LBI Análisis de Sensibilidad"
+author: "Yolanda Vila Gordillo"
+date: "19/10/2020"
+output: html_document
+case: NepFU2627_Females
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Empezamos cargando librerías y ficheros necesarios (son los empleados en el taller realizado en la reunión del proyecto Impress). Descomentar las líneas de rJava en caso de no tenerlo instalado.
+
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+library(tidyverse)
+
+require (rJava)
+.jinit()
+.jcall('java.lang.System','S','getProperty','java.version')
+# [1] "1.8.0_211"
+devtools::install_github('davidgohel/ReporteRsjars',INSTALL_opts=c("--no-multiarch"))
+devtools::install_github('davidgohel/ReporteRs',INSTALL_opts=c("--no-multiarch"))
+```
+
+ 
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(LBSPR) 
+library(reshape2)
+library(ggplot2) 
+library(tidyr)
+library(ReporteRs) 
+source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R") 
+source("utilities_vpaz.R") 
+```
+
+
+
+
+Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 26 mm. Females FU2627 (Fariña, 1996).   
+
+$L_{inf}^{LIT}$ = 65 cm. Females FU2627 (Fernánez et al., 1986).     
+
+${M/k}^{LIT}$ =0.2/0.08=2.5 (k 0.08 year-1 y M=0.2 (Fernánez et al., 1986; Morizur, 1984).
+
+
+Para poder aplicar el método nos faltan los  datos de composición de talla del desembarco y el peso medio por talla. Lo cargamos a continuación.
+  
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("FU2627_PesosFemales_1988_2019_medio.csv", stringsAsFactors = FALSE)
+freq <- read.csv("FU2627_tallasFemales_1988_2019.csv", stringsAsFactors = FALSE)
+```
+
+Los datos de frecuencia de tallas se agrupan usando binwidth=2.
+
+El escenario de **REFERENCIA EN NUESTRO ESTUDIO** es el siguiente usando $L_{inf}^{LIT}$ y ${M/k}^{LIT}$. Los resultados derivados de modificaciones en los valores de $L_{inf}$ y ${M/k}$ se compararan siempre con este escenario que es el que usaríamos en caso de no estar interesados en ver la sensibilidad del método a la correcta especificación de los mismos.
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=2.5,wal)
+```
+
+En las siguientes secciones vemos los resultamos considerando modificaciones de dichos parámetros.
+
+### ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO mk_ratio
+
+1. Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=0.75*2.5,wal)
+```
+
+2. Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.25*2.5,wal)
+```
+
+3. Tercero usando el valor por defecto de 1.5.
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.5,wal)
+```
+
+
+### ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO linf
+
+1. Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=0.75*65, lmat=26, mk_ratio=2.5,wal)
+```
+
+2. Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+```{r warning=FALSE, results="asis"}
+lb_tableSH(freq, 2, "mm", linf=1.25*65, lmat=26, mk_ratio=2.5,wal)
+```
+
+
+## TABLA RESUMEN DE LOS RESULTADOS
+
+Para sacar conclusiones del estudio realizado necesitamos resumir toda la información en una única tabla.
+
+## Debemos indicar para cada año y escenario si algún indicador a cambiado su color con respecto al escenario de referencia. Si ha cambiado debemos escribir su nombre en la tabla en el color al que ha cambiado.
+
+LA TABLA RESUMEN SE HA REALIZADO A MANO Y APARECE EN UN ARCHIVO WORD APARTE PARA CADA SEXO.
+###########################################################################################
+
+
+
+## Bibliografía
+
+Fernández, A., Fariña, A.C. and Penas, E., 1986. Efectos de un cambio de malla en la pesquería de cigala (Nephrops norvegicus L.) de Galicia. Bol. Esp. Oceanogr., 3: 57-74.
+
+Fariña, C., 1996. Megafauna de la plataforma continental y talud superior de Galicia. Biología de la cigala Nephrops norvegicus. Doctoral Thesis. Universidad da Coruña. 297 pp.
+
+Morizur, Y., 1982. Estimation de la mortalité pour quelques stocks de langoustine, Nephrops norvegicus. ICES CM 1982/K:10
+

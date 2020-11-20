@@ -1,0 +1,331 @@
+---
+title: "LB-SPR - FU 31 FEMALES"
+author: "Isabel González Herraiz"
+date: "20/10/2020"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## LB-SPR Análisis de Sensibilidad
+
+
+Empezamos cargando la librería.
+
+```{r}
+library(LBSPR) 
+```
+
+
+Usamos el conjunto de datos de cigala de fu 25 males 
+datos del ciclo vital :
+
+${M/k}^{LIT}$=1.9      (Prince et al., 2015) 
+
+$L_{inf}^{LIT}$=96    (Distribución de tallas, 2003)
+
+M = 0.0475            (resultado de dividir M/K 1.90 entre K 0.025 de ICES WKNEPH 16)
+
+L50=28 mm LC          (de muestreo de tesis Fariña, 1996) 
+
+L95=32.2 mm LC        (porque Lmad95% = 1.15*Lmad 50% por Prince WK Vigo Dic 2019)
+
+
+Con la información anterior creamos un objecto "LB_pars".
+
+
+```{r}
+Hke1Pars <- new("LB_pars")
+Hke1Pars@Linf <- 96
+Hke1Pars@L50 <- 28
+Hke1Pars@L95 <- 32.2
+Hke1Pars@MK <- 1.9 
+Hke1Pars@M <- 0.0475 
+Hke1Pars@L_units <- "mm"
+```
+
+
+Para poder aplicar el método necesitamos leer el archivo csv con las frecuencias de tallas y crear con dicha información un objecto "LB_lengths".
+
+```{r}
+HkeLenFreq1 <- new("LB_lengths", LB_pars=Hke1Pars, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq1@L_units <- Hke1Pars@L_units
+```
+
+
+A partir de la informacón creada ya podemos aplicar nuestro modelo. 
+
+
+El *ESCENARIO DE REFERENCIA* es el que utiliza los parámetros descritos con anterioridad es decir el que usa ${M/k}^{LIT}$ y
+$L_{inf}^{LIT}$. Los resultados derivados de modificaciones en los valores de $L_{inf}$ y ${M/k}$ se compararan siempre con este escenario que es el que usaríamos en caso de no estar interesados en ver la sensibilidad del método a la correcta especificación de los mismos.
+
+```{r}
+A=HkeLenFreq1@LData
+B=is.na(HkeLenFreq1@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1@LData=A
+  
+
+
+
+Fit1 <- LBSPRfit(Hke1Pars, HkeLenFreq1)
+```
+
+
+En las siguientes secciones vemos los resultamos considerando modificaciones de dichos parámetros.
+
+## ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO @MK
+
+1. Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+Hke1ParsMK <-Hke1Pars
+Hke1ParsMK@MK <- 0.75*1.90
+
+
+HkeLenFreq1MK <- new("LB_lengths", LB_pars=Hke1ParsMK, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq1MK@L_units <- Hke1ParsMK@L_units
+
+
+A=HkeLenFreq1MK@LData
+B=is.na(HkeLenFreq1MK@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1MK@LData=A
+
+Fit1MK <- LBSPRfit(Hke1ParsMK, HkeLenFreq1MK)
+```
+
+2. Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+```{r results="asis", warning=FALSE}
+Hke2ParsMK <-Hke1Pars
+Hke2ParsMK@MK <- 1.25*1.90
+
+
+HkeLenFreq2MK <- new("LB_lengths", LB_pars=Hke2ParsMK, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq2MK@L_units <- Hke2ParsMK@L_units
+
+A=HkeLenFreq2MK@LData
+B=is.na(HkeLenFreq2MK@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq2MK@LData=A
+
+
+Fit2MK <- LBSPRfit(Hke2ParsMK, HkeLenFreq2MK)
+```
+
+3. Tercero usando el valor por defecto de 1.5.
+
+```{r results="asis", warning=FALSE}
+Hke3ParsMK <-Hke1Pars
+Hke3ParsMK@MK <- 1.5
+
+HkeLenFreq3MK <- new("LB_lengths", LB_pars=Hke3ParsMK, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq3MK@L_units <- Hke3ParsMK@L_units
+
+
+A=HkeLenFreq3MK@LData
+B=is.na(HkeLenFreq3MK@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq3MK@LData=A
+
+
+Fit3MK <- LBSPRfit(Hke3ParsMK, HkeLenFreq3MK)
+```
+
+## ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO @Linf
+
+
+
+1. Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+
+```{r results="asis", warning=FALSE}
+Hke1ParsLinf <-Hke1Pars
+Hke1ParsLinf@Linf <- 0.75*96
+
+HkeLenFreq1Linf <- new("LB_lengths", LB_pars=Hke1ParsLinf, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq1Linf@L_units <- Hke1ParsLinf@L_units
+
+A=HkeLenFreq1Linf@LData
+B=is.na(HkeLenFreq1Linf@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq1Linf@LData=A
+
+
+Fit1Linf <- LBSPRfit(Hke1ParsLinf, HkeLenFreq1Linf)
+```
+
+2. Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+
+```{r results="asis", warning=FALSE}
+Hke2ParsLinf <-Hke1Pars
+Hke2ParsLinf@Linf <- 1.25*96
+
+HkeLenFreq2Linf <- new("LB_lengths", LB_pars=Hke2ParsLinf, file="FU31_Females.csv", dataType="freq", header=TRUE)
+HkeLenFreq2Linf@L_units <- Hke2ParsLinf@L_units
+
+A=HkeLenFreq2Linf@LData
+B=is.na(HkeLenFreq2Linf@LData)
+
+for (i in 1:74){
+  for (j in 1:30){
+    if(B[i,j]==TRUE){
+    A[i,j]=0}
+  }
+  
+}
+
+HkeLenFreq2Linf@LData=A
+
+
+
+HkeLenFreq1@LMids
+
+HkeLenFreq2Linf@LMids=23:120
+A=HkeLenFreq2Linf@LData
+for (i in 1:24){
+A=rbind(A,HkeLenFreq2Linf@LData[74,])}
+
+A[75:98,1:30]=rep(0,30)
+cbind(A,HkeLenFreq2Linf@LMids)
+
+HkeLenFreq2Linf@LData=A
+Hke2ParsLinf <-Hke1Pars
+Hke2ParsLinf@Linf <- 1.25*96
+Fit2Linf <- LBSPRfit(Hke2ParsLinf, HkeLenFreq2Linf)
+
+```
+
+## RESUMEN DE LA INFORMACIÓN
+
+Crearemos dos gráficos en los cuales veremos las estimaciones de F/M y de SPR para los diferentes escenarios.
+
+
+Gráfico SPR:
+
+
+```{r}
+
+smoothEsts1 <- data.frame(Fit1@Ests)
+smoothEsts1MK <- data.frame(Fit1MK@Ests)
+smoothEsts2MK <- data.frame(Fit2MK@Ests)
+smoothEsts3MK <- data.frame(Fit3MK@Ests)
+smoothEsts1Linf <- data.frame(Fit1Linf@Ests)
+smoothEsts2Linf <- data.frame(Fit2Linf@Ests)
+
+
+spr1=Fit1@SPR
+sprmk1=Fit1MK@SPR
+sprmk2=Fit2MK@SPR
+sprmk3=Fit3MK@SPR
+sprL1=Fit1Linf@SPR
+sprL2=Fit2Linf@SPR
+
+min=min(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
+max=max(c(spr1,sprmk1,sprmk2,sprmk3,sprL1,sprL2))
+
+plot(1988:2017,spr1,ylim=c(min,max),xlab="Years",ylab="SPR estimates",pch=30)
+
+lines(1988:2017, smoothEsts1$SPR, lwd = 1,col="black")
+lines(1988:2017, smoothEsts1MK$SPR, lwd = 1,col=2)
+lines(1988:2017, smoothEsts2MK$SPR, lwd = 1,col=3)
+lines(1988:2017, smoothEsts3MK$SPR, lwd = 1,col=4)
+lines(1988:2017, smoothEsts1Linf$SPR, lwd = 1,col=5)
+lines(1988:2017, smoothEsts2Linf$SPR, lwd = 1,col=6)
+
+
+points(1988:2017, sprmk1,col=2,pch=30)
+points(1988:2017, sprmk2,col=3,pch=30)
+points(1988:2017, sprmk3,col=4,pch=30)
+points(1988:2017, sprL1,col=5,pch=30)
+points(1988:2017, sprL2,col=6,pch=30)
+
+legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=30, cex=0.8)
+```
+
+
+Gráfico F/M:
+
+
+
+```{r}
+
+fm1=Fit1@FM
+fmmk1=Fit1MK@FM
+fmmk2=Fit2MK@FM
+fmmk3=Fit3MK@FM
+fmL1=Fit1Linf@FM
+fmL2=Fit2Linf@FM
+
+min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
+max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
+
+plot(1988:2017,fm1,ylim=c(min,max),xlab="Years",ylab="F/M estimates",pch=30)
+
+lines(1988:2017, smoothEsts1$FM, lwd = 1,col="black")
+lines(1988:2017, smoothEsts1MK$FM, lwd = 1,col=2)
+lines(1988:2017, smoothEsts2MK$FM, lwd = 1,col=3)
+lines(1988:2017, smoothEsts3MK$FM, lwd = 1,col=4)
+lines(1988:2017, smoothEsts2Linf$FM, lwd = 1,col=6)
+
+
+points(1988:2017, fmmk1,col=2,pch=30)
+points(1988:2017, fmmk2,col=3,pch=30)
+points(1988:2017, fmmk3,col=4,pch=30)
+points(1988:2017, fmL1,col=5,pch=30)
+points(1988:2017, fmL2,col=6,pch=30)
+
+legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=30, cex=0.8)
+```
+
+
+

@@ -1,0 +1,792 @@
+---
+title: "Length Based Indicators (LBI)"
+subtitle: "Aplicación al stock costero de Galicia de Trisopterus luscus"
+author: "A. Alonso-Fernández and J. Otero"
+date: "Octubre de 2020"
+output:
+  html_document:
+    theme: cerulean
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# LBI: Length Based Indicators 
+
+Se calculan un conjunto de indicadores basados en la frecuencia de tallas para evaluar la composición de las capturas/desembarcos y clasificar los stocks de acuerdo a su estado de conservación, optimizacion de las capturas y al MSY. La metodología fue desarrollada por WKLIFE V (2015), aunque ya había sido definida previamente por Froese (2004).   
+
+Los indicadores del estado del stock se calculan a partir de las frecuencias de talla y se comparan con los Puntos de Referencia (PR) de los parámetros del ciclo vital, teoría ecológica o de la observación empírica. 
+
+Es de los métodos recomendados por ICES para estimar puntos de referencia de MSY en stocks de categoría 3 and 4 (ICES, 2018).   
+
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+library(tidyverse)
+indicators_text <- data.frame(
+  Indicator = c("Lmax5%","L95%","Pmega","L25%","Lc","Lmean","Lmaxy","Lmean"), 
+  Calculation = c("Mean length of largest 5%", "95th percentile","Proportion of individuals above Lopt + 10%", "25th percentile of length distribution","Length at first catch (length at 50% of mode)", "Mean length of individuals > Lc", "Length class with maximum biomass in catch", "Mean length of individuals > Lc"),
+Reference = c ("Linf", "Linf","0.3-0.4","Lmat","Lmat", "Lopt = 2/3 Linf", "Lopt = 2/3 Linf *", "LF=M = (0.75Lc+0.25Linf)*"),
+IndicatorRatio = c("Lmax5% / Linf","L95% / Linf","Pmega","L25% / Lmat","Lc / Lmat","Lmean/Lopt","Lmaxy / Lopt","Lmean / LF=M"),
+ExpectedValue = c("> 0.8","> 0.8", "> 0.3","> 1","> 1","+- 1","+-1",">=1"),
+Property = c ("Conservation (large individuals)","","","Conservation (immatures)","", "Optimal yield", "", "MSY"))
+kable(indicators_text, escape=TRUE, caption = "Indicadores basados en tallas para evaluar estado de explotación de stocks") %>%
+  kable_styling("striped", full_width = F,position = "center") %>%
+   row_spec(1:3, bold = F, background = "#F2F3F4") %>%
+   row_spec(4:5, bold = F, background ="yellow") %>%
+   row_spec(6:7, bold = F, background ="#00FFFF") %>%
+   row_spec(8, bold = F, background ="#7FFFD0") %>%
+   footnote(symbol= c ("asumiendo M/K=1.5, teleósteos"), symbol_manual
+="*")
+```
+
+Se suelen usar valores de referencia de M/k = 1.5:
+
+$L_{opt} = 3*L_{inf}/(3+(M/k))$
+
+$L_{F=M} = (1-a)*L_c + a*L_{inf}$
+  a=1/2*(M/k)+1
+  
+Prince et al. (2015) sugieren que la asunción de un único valor para los "life history invariants", como *M/K*, no se cumple para todas las especies y unicamente se comportan como tal dentro de grupos de especies que compartan estrategias de historia vital similares. Además parámetros como $L_{inf}$ tienen una influencia manifiesta en os resultados del método. Por este motivo resulta necesario llevar a cabo un análisis de sensibilidad respecto a los valores asignados a este parámetro.
+
+## Información necesaria
+
+1. Frecuencias de talla de las capturas/desembarcos.   
+2. Parámetros de la historia vital:  
+
+    + Talla de madurez ($L_{mat}$)
+    + Parámetro de crecimiento de von Bertalanffy  ($L_{inf}$)  
+    + Los parámetros de la relación talla-peso (a, b) o pesos medios por talla para cada año.
+
+## Asunciones
+
+Condiciones de equilibrio: la mortalidad por pesca y el reclutamiento han sido constantes.
+
+Selectividad: sigue una curva logística (es plana, no en forma de domo).
+
+Las distribuciones de talla son representativas de la captura.
+
+Parámetros de la historia vital son conocidos (para DLS puede haber incertidumbres).
+
+Un proxy para MSY basado en tallas se define como:  $L_{F=M}$ = 0.75 $L_c$+0.25 $\ L_{inf}$   
+
+## Software 
+
+El código para estimar los indicadores está disponible en  [github/ICES_tools](https://github.com/ices-tools-dev/LBIndicator_shiny).
+El script *utilities.R* es el código modificado del script generado en WKLIFE V. También existe una app de [Shinny](https://scott.shinyapps.io/LBIndicator_shiny/). 
+
+# Caso de estudio: *Trisopterus luscus* - Galicia
+
+Se aplicán la metodología **LBI** a los datos provenientes de la red de monitoreo con observadores a bordo de buques de la flota artesanal de Galicia, gestionado por la Unidad Técnica da Pesca de Baixura  (**UTPB**, Xunta de Galicia, 1999 - 2018).
+
+## R session: librerías
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(LBSPR)      # se usan algunas funciones gráficas
+library(tidyverse)  # data management
+library(reshape2)
+
+library(patchwork)
+
+#tables
+# https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+library(kableExtra)
+library(DT)
+
+# length-weight relationships
+library(FSA)
+library(car)
+
+# source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R")
+# incluye la opción de m_k
+source("0.1_utilities_lbi-vpaz.R")
+# Función tabla semáforo serie histórica, settings de lb_plot modificados.
+
+#functions
+
+TabLBI <- function(data) {
+  data %>%
+    mutate(
+      Lc_Lmat = ifelse(
+        Lc_Lmat > 1,
+        cell_spec(
+          Lc_Lmat,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          Lc_Lmat,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      ),
+      L25_Lmat = ifelse(
+        L25_Lmat > 1,
+        cell_spec(
+          L25_Lmat,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          L25_Lmat,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      ),
+      Lmax5_Linf = ifelse(
+        Lmax5_Linf > 0.8,
+        cell_spec(
+          Lmax5_Linf,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          Lmax5_Linf,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      ),
+      Pmega = ifelse(
+        Pmega > 0.3,
+        cell_spec(
+          Pmega,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          Pmega,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      ),
+      Lmean_Lopt = ifelse(
+        Lmean_Lopt > 0.9,
+        cell_spec(
+          Lmean_Lopt,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          Lmean_Lopt,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      ),
+      Lmean_LFeM = ifelse(
+        Lmean_LFeM >= 1,
+        cell_spec(
+          Lmean_LFeM,
+          background  = "green",
+          bold = T,
+          color = "white",
+          align = "center"
+        ),
+        cell_spec(
+          Lmean_LFeM,
+          background  = "red",
+          italic = T,
+          color = "white",
+          align = "center"
+        )
+      )
+    ) %>%
+    #select(car, everything()) %>%
+    kable(escape = F) %>%
+    kable_styling("striped", full_width = F) %>%
+    column_spec(5, width = "3cm") %>%
+    add_header_above(c(
+      " ",
+      "Conservation" = 4,
+      "Optimizing Yield" = 1,
+      "MSY" = 1
+    ))
+}
+
+colors <-
+  c("L25/Lmat"   = "green",
+    "Lmean/Lopt" = "orange",
+    "Lmean/LFeM" = "yellow",
+    "Pmega"      = "red"
+  )
+
+PlotLBI <- function(data, Title) {
+  ggplot() +
+    geom_hline(yintercept = 1,
+               col = "black",
+               linetype = "solid") +
+    geom_hline(yintercept = 0.9,
+               col = "black",
+               linetype = "dashed") +
+    geom_hline(yintercept = 0.3,
+               col = "black",
+               linetype = "dotted") +
+    geom_line(data = data, aes(x = Year, y = L25_Lmat,
+                                             color = "L25/Lmat")) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = L25_Lmat),
+      size = 5,
+      col = "white"
+    ) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = L25_Lmat,
+          color = "L25/Lmat"),
+      size = 3.5,
+      alpha = 0.5
+    ) +
+    geom_line(data = data, aes(x = Year, y = Lmean_Lopt,
+                                             color = "Lmean/Lopt")) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = Lmean_Lopt),
+      size = 5,
+      col = "white"
+    ) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = Lmean_Lopt,
+          color = "Lmean/Lopt"),
+      size = 3.5,
+      alpha = 0.5
+    ) +
+    geom_line(data = data, aes(x = Year, y = Lmean_LFeM,
+                                             color = "Lmean/LFeM")) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = Lmean_LFeM),
+      size = 5,
+      col = "white"
+    ) +
+    geom_point(
+      data = data,
+      aes(x = Year, y = Lmean_LFeM,
+          color = "Lmean/LFeM"),
+      size = 3.5,
+      alpha = 0.5
+    ) +
+    geom_line(data = data, aes(x = Year, y = Pmega,
+                                             color = "Pmega")) +
+    geom_point(data = data,
+               aes(x = Year, y = Pmega),
+               size = 5,
+               col = "white") +
+    geom_point(
+      data = data,
+      aes(x = Year, y = Pmega,
+          color = "Pmega"),
+      size = 3.5,
+      alpha = 0.5
+    ) +
+    scale_y_continuous(limits = c(0, 1.1)) +
+    labs(x = "Year",
+         y = "Indicator ratio",
+         color = "Ratios") +
+    scale_color_manual(values = colors) + ggtitle(Title) +
+    theme_bw()
+}
+
+
+# info de las versiones 
+sessionInfo()
+```
+
+Funciones disponibles dentro del script: 
+
+```{r  message=FALSE, warning=FALSE}
+ls()
+```
+
+## Datos
+
+Parámetros ciclo vital que vamos usar para el *Trisopterus luscus*:
+
+- Usaremos como referencia de talla de primera maduración la referentecia para hembras de Alonso-Fernandez et al. (2008), $L^{LIT}_{50} = 19.2 cm$, basado en histología.
+
+- Los parámetros de crecimiento (Von Bertalanffy) que se recogen en Labarta et al. (1982): $L^{LIT}_{inf} = 46.7 cm$;  $K^{LIT} = 0.21$; $t^{LIT}_{0} = 1.27$; $A^{LIT}_{max} = 9 years$.
+
+- Para estimar el ratio $M/K^{LIT}$ recurrimos a Then et al. (2015). Como referencia proponemos usar el cáculo de mortalidad natural basado en los parámetros de crecimiento (ver arriba): $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$. Pero además probaremos el método basado en la edad máxima: $M_{nls} = 0.6533320 y^{-1}$; $M_{nls}/K^{LIT} = 3.111105$. Se puede recurrir a la app [Barefoot Ecologist's Toolbox](http://barefootecologist.com.au/shiny_m).
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# usaremos los datos de Von Bertalanfy calculados por Labarta et al. (1982)
+# datos de maduración de Alonso-Fernández et al. (2008)
+# En ambos casos usamos como referencia los datos de hembras
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "A50", "Linf", "K", "t0", "Amax")
+
+# para los datos de mortalidad natural recurrimos a la app
+# http://barefootecologist.com.au/shiny_m
+# obtenemos estimas de mortalidad mediante diversos métodos
+
+natM <- read_delim("data\\M_tluscus.csv", delim = ",")
+natM <- natM %>% 
+  mutate(MK = M/0.21)
+# Usando como referencia Then et al. (2015)
+# proponemos usa 2 principales métodos de cálculo de mortalidad
+# Then_nls y Then_VBGF
+natM <- data.frame(natM[c(2, 8),])
+LHTs$MKvbgf <- natM[2,4]
+LHTs$MKnls <- natM[1,4]
+LHTs$MK <- 1.5
+```
+
+Cargamos datos de composición de talla a partir de los muestreos biológicos a bordo realizados por la UTPB en la flota de bajura gallega. Datos individuales por lance desde 1999. A pesar de que la faneca es capturada por la flota artesanal por diferentes artes de pesca, los presentes datos provienen únicamente de los muestreos realizados en **VETAS** (enmalle). Se han elegido las VETAS como arte más representativa por esta especie en base a un equilibrio entre el numero de datos disponibles y la capturabilidad específica (ver Alonso-Fernández et a. 2019). Debemos adaptar el formato de la base de datos de registros individuaes a una tabla de frecuencias. 
+  
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+faneca <- read_csv("data\\faneca_size_9918.csv")
+sizeDat <- na.omit(faneca %>%
+                    select(TLength, Year))
+anho <- as.character(unique(sort(faneca$Year)))
+sizeDat <- data.frame(sizeDat)
+br = seq(min(sizeDat$TLength), max(sizeDat$TLength) + 1, by = 1)
+ranges = paste(head(br, -1), br[-1], sep = " - ")
+
+sizeDat <- unstack(sizeDat)
+
+freq <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+
+for (i in 1:length(anho)) {
+  freq[, 1] <- head(br, -1)
+  freq[, i + 1] <-
+    hist(
+      sizeDat[[i]],
+      breaks = br - 1,
+      include.lowest = TRUE,
+      plot = FALSE
+    )$counts
+  colnames(freq) <- c("MeanLength", anho)
+}
+```
+
+
+Utilizamos los datos disponibles de pesos y tallas individuales para estimar los parámetros  *a* y *b* de las **relaciones talla-peso** (Ogle 2016). De este modo podemos construir una tabla más completa de frecuencias de pesos a partir de las tallas (existen muchos más registros de tallas que de pesos individuales en la base de datos de la UTPB).
+
+Eliminamos outliers y obtenemos los parámetros de la **relación talla-peso** para *Trisopterus luscus* (Ogle 2016). 
+
+```{r  include=FALSE}
+wlDat <- na.omit(faneca %>% dplyr::select(TLength, Weight, Year))
+rownames(wlDat) <- NULL
+attributes(wlDat)$row.names
+wlDat <- wlDat %>%
+  filter(Weight < 1500,
+         TLength < 37.5)
+wlDat$logW <- log10(wlDat$Weight)
+wlDat$logL <- log10(wlDat$TLength)
+modwl <- lm(logW ~ logL, data = wlDat)
+outl <-
+  as.numeric(names(outlierTest(modwl, n.max = 100)[[1]]))
+length(outl)
+wlDat <- wlDat[-outl, ]
+```
+
+```{r  message=FALSE, warning=FALSE, echo=FALSE, fig.height = 6, fig.width = 6, fig.align = "center", fig.cap = "Figure 1. Relación talla-peso para Trisopterus luscus."}
+ggplot(wlDat, aes(x = TLength, y = Weight)) +
+  geom_point(alpha = 0.25, size = 5, col = "black") +
+  geom_smooth(col = "grey", fill = "grey", se = T) +
+  # scale_x_continuous(breaks = seq(10, 40, 1)) +
+  xlab("Total length (cm)") + ylab("Total weight (g)") +
+  theme_minimal()
+```
+
+```{r  message=FALSE, warning=FALSE, echo=FALSE, paged.print=FALSE, fig.height = 5, fig.width = 8, fig.align = "center", fig.cap = "Figure 2. Residual-plots de la relación talla-peso para Trisopterus luscus."}
+modwl <- lm(logW ~ logL, data = wlDat)
+summary(modwl)
+residPlot(modwl, outlier.test = F)
+```
+
+```{r  }
+alfaWL <- 10^modwl$coefficients[1]; alfaWL
+betaWL <- modwl$coefficients[2]; betaWL
+```
+
+Creamos con estos parámetros nuestra tabla de pesos medios por rango de talla (sexos combinados).
+
+```{r include=FALSE}
+wal <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+
+for (i in 1:length(anho)) {
+  wal[, 1] <- head(br, -1)
+  wal[, i + 1] <- alfaWL * (head(br, -1) ^ betaWL)
+  colnames(wal) <- c("MeanLength", anho)
+}
+```
+
+Evaluamos las variaciones en distribución de frecuencia de tallas por año. Utilizamos la función bin_plot.
+
+```{r Figure1,cache= TRUE, message=FALSE, warning=FALSE, fig.cap = "Figure 3. Composición de tallas de Trisopterus luscus capturado en la costa gallega. size bin = 1 cm", fig.align = "center", fig.height = 9, fig.width = 8}
+bin_plot(freq, 1, "cm")
+```
+
+A pesar de las diferencias en el esfuerzo de muestreo anual e incluso con una agrupación de 1 cm por grupos de tallas, obtenemos una distribución unimodal para todos los años. Por lo tanto trabajaremos con los datos agrupados en clases de talla de 1 cm. 
+
+```{r include=FALSE}
+tableBin <- bin_mat (freq, 1)
+colnames(tableBin) <- c("Class", "Center", paste(c(seq(1999, 2018, 1))))
+``` 
+
+## Estimas LBI
+
+Estimas de los indicadores definidos (y alguno más) y de los ratios.
+
+**Tabla 1.** Tabla de LBI para *Trisopterus luscus* en la costa de Galicia.
+
+```{r include=FALSE}
+LBI_EstIndicator <- lb_ind(freq, 1, 46.7 , 19.2, 1.761846, wal)
+LBI_EstIndicator <- LBI_EstIndicator %>% 
+mutate_if(is.numeric, round, 3)
+```
+
+```{r tabla1}
+table5 <- LBI_EstIndicator
+datatable(table5, rownames = FALSE, options = list(autoWidth = TRUE))
+```
+
+## Tendencias temporales LBI
+
+Plots de las estimas de los indicadores y de los ratios.
+
+```{r  Figure6, cache= TRUE, fig.cap="Figure 4. Tendencias temporales de los indicadores y de los ratios estimados.", fig.align = "center", dpi=200, fig.height = 9, fig.width = 7}
+lb_plot(freq, 1, "cm", 46.7 , 19.2, 1.761846, wal)
+```
+
+## Tablas semáforo LBI 
+
+Los dos primeros indicadores reflejan la **conservación de los inmaduros** y el ratio debe ser > 1.
+
+$L_{max5\%}/L_{inf}$ (target > 0.8) y $P_{mega}$ (target > 0.3) indican que el estado de **conservación de los ejemplares de mayor talla**.
+
+Según el criterio de **rendimiento óptimo** todos los peces capturados deberían estar dentro del 10% del talla óptima de explotación ($L_{opt}$) (target >0.9). $L_{opt}$ representa la talla a la que la biomasa y la produccion de huevos es máxima en una poblacion no explotada y es la talla a la cual la captura es máxima para una determinada F. $L_{mean}/L_{opt}$ indica si talla objetivo de la captura está por debajo de la talla óptima de explotación (target > 0.9).
+La **explotación MSY** se asumeconsidera adecuada cuando la talla media igual o superior a la $L_{F=M}$ (target > o = 1).
+
+**Tabla 2.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia.
+
+```{r include=FALSE}
+LBI_EstIndicator <- lb_ind(freq, 1, 46.7 , 19.2, 1.761846, wal)
+LBI_EstIndicator <- LBI_EstIndicator %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator)
+``` 
+
+# Análisis de sensibilidad
+
+Planteamos ahora un sencillo análisis de sensibilidad modificando en primer lugar $L_{inf}$ y después $M/K$ y comparando con los resultados obtenidos a partir de nuestros parámetros de referencia: $L^{LIT}_{inf}$ = 46.7 cm y $M_{VBGF}/K^{LIT}$ = 1.761846 (ver Tabla 5).
+
+```{r  Figure7, cache= TRUE, fig.cap="Figure 5. Tendencias temporales de los principales indicadores y de los ratios estimados.", fig.align = "center", dpi=200, fig.height = 5, fig.width = 7}
+MK17 <- PlotLBI(LBI_EstIndicator, "M/K = 1.7")
+MK17
+```
+
+## Escenarios modificados usando valores diferentes para el parámetro **L_{inf}**
+
+Establecemos un rango de variación del parámetro $L^{LIT}_{inf}$ multiplicándolo por 0.75 (límite inferior) y por 1.25 (límite superior): $L^{low}_{inf}$ = 0.75 x 46.7; $L^{sup}_{inf}$ = 1.25 x 46.7.
+
+**LÍMITE INFERIOR**: $L^{low}_{inf}$ = 0.75 x 46.7
+
+**Tabla 3.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el límite inferior del parámetro $L^{LIT}_{inf}$.
+
+```{r include=FALSE}
+LBI_EstIndicator2 <- lb_ind(freq, 1, 0.75*46.7 , 19.2, 1.761846, wal)
+LBI_EstIndicator2 <- LBI_EstIndicator2 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator2)
+``` 
+
+**LÍMITE SUPERIOR**: $L^{low}_{inf}$ = 1.25 x 46.7
+
+**Tabla 4.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el límite superior del parámetro $L^{LIT}_{inf}$.
+
+```{r include=FALSE}
+LBI_EstIndicator3 <- lb_ind(freq, 1, 1.25*46.7 , 19.2, 1.761846, wal)
+LBI_EstIndicator3 <- LBI_EstIndicator3 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator3)
+``` 
+
+Comparamos gráficamente las **SERIES TEMPORALES** de los indicadores para cada uno de los escenarios.
+
+```{r  Figure8, cache= TRUE, fig.cap="Figure 6. Tendencias temporales de los principales indicadores y de los ratios estimados comparando diferentes escenarios de $L_{inf}$.", fig.align = "center", dpi=200, fig.height = 15, fig.width = 8}
+MK17 <- PlotLBI(LBI_EstIndicator, "M/K = 1.7")
+MKLowK <- PlotLBI(LBI_EstIndicator2, "M/K = 1.7; 0.75 x Linf")
+MKUppK <- PlotLBI(LBI_EstIndicator3, "M/K = 1.7; 1.75 x Linf")
+MK17 / MKLowK / MKUppK
+```
+
+## Escenarios modificados usando valores diferentes para el ratio **M/K**
+
+Establecemos un rango de variación del parámetro $M/K^{LIT}$ multiplicándolo por 0.75 (límite inferior) y por 1.25 (límite superior): $M/K^{low}$ = 0.75 x 1.76; $M/K^{sup}$ = 1.25 x 1.76.
+
+**LÍMITE INFERIOR**: $M/K^{low}$ = 0.75 x 1.76
+
+**Tabla 5.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el límite inferior del parámetro $M/K^{LIT}$.
+
+```{r include=FALSE}
+LBI_EstIndicator4 <- lb_ind(freq, 1, 46.7 , 19.2, 0.75*1.761846, wal)
+LBI_EstIndicator4 <- LBI_EstIndicator4 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator4)
+``` 
+
+**LÍMITE SUPERIOR**: $L^{low}_{inf}$ = 1.25 x 46.7
+
+**Tabla 6.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el límite superior del parámetro $M/K^{LIT}$.
+
+```{r include=FALSE}
+LBI_EstIndicator5 <- lb_ind(freq, 1, 46.7 , 19.2, 1.25*1.761846, wal)
+LBI_EstIndicator5 <- LBI_EstIndicator5 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator5)
+``` 
+
+Comparamos gráficamente las **SERIES TEMPORALES** de los indicadores para cada uno de los escenarios.
+
+```{r  Figure9, cache= TRUE, fig.cap="Figure 7. Tendencias temporales de los principales indicadores y de los ratios estimados comparando diferentes escenarios de $M/K$.", fig.align = "center", dpi=200, fig.height = 15, fig.width = 8}
+MK17 <- PlotLBI(LBI_EstIndicator, "M/K = 1.7")
+MK17Low <- PlotLBI(LBI_EstIndicator4, "M/K = 0.75 x 1.76")
+MK17Upp <- PlotLBI(LBI_EstIndicator5, "M/K = 1.25 x 1.76")
+MK17 / MK17Low / MK17Upp
+```
+
+Además de evaluar los límites inferior y superior del parámetro $M/K^{LIT}$, comparamos con otras referencias del valor $M/K$: i) $M/K_{assump}$ = 1.5, valor que se asume en la mayoría de los teleósteos; ii) y   $M_{nls}/K^{LIT}$ = 3.111105, usando el cáculo de mortalidad basado en la edad maxima (longevidad, $M_{nls}$ = 0.6533320 $y^{-1}$
+
+**VALOR ESTANDAR TELEOSTEOS**: $M/K_{assump}$ = 1.5
+
+**Tabla 7.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el valor fijos estandar para teleósteos $M/K$ = 1.5.
+
+```{r include=FALSE}
+LBI_EstIndicator6 <- lb_ind(freq, 1, 46.7 , 19.2, 1.5, wal)
+LBI_EstIndicator6 <- LBI_EstIndicator6 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator6)
+``` 
+
+**MORTALIDAD NATURAL (Longevidad, Then et al. (2015)**: $M_{nls}/K^{LIT}$ = 3.1
+
+**Tabla 8.** Tabla con semáforo del estado del stock en la serie histórica para la *Trisopterus luscus* en la costa de Galicia usando el la mortalidad natural calculada a partir de datos de longevidad, $M_{nls}/K^{LIT}$ = 3.1.
+
+```{r include=FALSE}
+LBI_EstIndicator7 <- lb_ind(freq, 1, 46.7 , 19.2, 3.111105, wal)
+LBI_EstIndicator7 <- LBI_EstIndicator7 %>% 
+  dplyr::select(Year, Lc_Lmat, L25_Lmat, Lmax5_Linf, Pmega, Lmean_Lopt, Lmean_LFeM) %>% 
+  mutate_if(is.numeric, round, 3)
+```
+
+```{r warning=FALSE}
+TabLBI(LBI_EstIndicator7)
+``` 
+
+Comparamos gráficamente las **SERIES TEMPORALES** de los indicadores para cada uno de los escenarios de $M/K$ alternativos.
+
+```{r  Figure10, cache= TRUE, fig.cap="Figure 8. Tendencias temporales de los principales indicadores y de los ratios estimados comparando diferentes escenarios de $M/K$.", fig.align = "center", dpi=200, fig.height = 15, fig.width = 8}
+MK17 <- PlotLBI(LBI_EstIndicator, "M/K = 1.7")
+MK15    <- PlotLBI(LBI_EstIndicator6, "M/K = 1.5")
+MK31    <- PlotLBI(LBI_EstIndicator7, "M/K = 3.1")
+MK17 / MK15 / MK31
+```
+
+# Conclusiones 
+
+Para la obtención de los presentes LBI Se han utilizado los parámetros biológicos que consideramos más adecuados dada la situación geográfica del stock *Trisopterus luscus* estudiado (Labarta et al. 1982a, 1982b; Alonso-Fernández et al. 2008). Es importante considerar que los datos se limitan a la zona costera de Galicia (divisiones ICES 9a y 8c) con una distribución batimétrica límite de 150 m, es decir, no tenemos datos de plataforma. Para estimar el ratio $M/K^{LIT}$ recurrimos a Then et al. (2015). Como referencia proponemos usar el cáculo de mortalidad natural basado en los parámetros de crecimiento (ver arriba): $M_{VBGF} = 0.3699877 y^{-1}$; $M_{VBGF}/K^{LIT} = 1.761846$.
+
+En el 1999, la talla de primera captura fue superior a la de madurez; sin embargo durante el resto de la serie histórica este indicador no cumple con los objetivos de conservación (ratio < 1). La $L_{25\%}$ fue superior a la talla de madurez en los años 1999, 2003, 2004, 2009, 2012, 2014, 2015, 2016, 2017 y 2018. Esto muestra una ligera tendencia positiva a lo largo de la serie. Sin embargo $L_{max5\%}/L_{inf}$ y $P_{mega}$ indican que el estado de conservación de los ejemplares de mayor talla no es el más adecuado. Es salientable destacar que los datos provienen de una arte de pesca pasivo de enmalle, el cual generalmente presenta una curva de selectividad no asintótica (*dome shape*). Esto afectaría significativamente a la interprtación de los presentes resultados. La talla máxima de captura fue de 43 cm y el 3º cuartil 23 cm en los muestreos biológicos de la UTPB, y teniendo en cuenta que el parámetro Linf = 45.7 cm, por lo que habría que evaluar si se están muestreando convenientemente las individuos más grandes.
+
+Los indicadores de rendimiento óptimo y explotación MSY muestran un regimen de explotación superior al óptimo sostenible.
+
+La interpretación final de todos estos resultados debería estar sujeta a una adecuada estimación de la **incertidumbre** (no se diponen de momento de **intervalos de confianza**). Una forma de considerar estos aspectos es realizar un análisis de sensibilidad de los parámetros del método. En este caso nos centramos en los parámetros: i) $L_{inf}$ y ii) $M/K$.
+
+En la siguiente tabla vemos los principales cambios que sufren los LBI en cada uno de los escenarios propuestos en el análisis de sensibilidad respecto al valor de referencia obtenido de la literatura (Labarta et al. 1982a, 1982b; Alonso-Fernández et al. 2008; Then et al. 2015).
+
+**Tabla 9.** Cambios significativos en los LBI estimados para *Trisopterus luscus* en la costa de Galicia en cada uno de los escenarios propuestos en el análisis de sensibilidad respecto a los valores de referencia, $L^{LIT}_{inf}$ = 46.7 y $M_{vbgf}/K^{LIT}$ = 1.7.
+
+
+```{r warning=FALSE}
+LBIcomp <- data.frame(cbind(
+  seq(1999, 2018, 1),
+  c("Lmax5/Linf; Lmean/Lopt", "Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt; Lmean/Lopt",
+    "Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt",
+    "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmean/Lopt",
+    "Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt", "Lmax5/Linf; Lmean/Lopt"),
+  rep(NA, 20),
+  rep(NA, 20),
+  rep(NA, 20),
+  rep(NA, 20),
+  c("Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt; Lmean/LF", "Lmean/Lopt; Lmean/LF", "Lmean/Lopt; Lmean/LF",
+    "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt",
+    "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt", NA,
+    "Lmean/Lopt", "Lmean/Lopt", "Lmean/Lopt; Lmean/LF", "Lmean/Lopt", "Lmean/Lopt")))
+
+
+colnames(LBIcomp) <- c("Year", 
+                       "Linfx0.75",
+                       "Linfx1.25",
+                       "MKx0.75",
+                       "MKx1.25",
+                       "MK.1.5",
+                       "MK.Then_nls"
+                       )
+
+LBIcomp %>%
+  mutate(
+    Linfx0.75 = ifelse(
+      is.na(Linfx0.75),
+      cell_spec(Linfx0.75,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        Linfx0.75,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    ),
+    Linfx1.25 = ifelse(
+      is.na(Linfx1.25),
+      cell_spec(Linfx1.25,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        Linfx1.25,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    ),
+    MKx0.75 = ifelse(
+      is.na(MKx0.75),
+      cell_spec(MKx0.75,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        MKx0.75,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    ),
+    MKx1.25 = ifelse(
+      is.na(MKx1.25),
+      cell_spec(MKx1.25,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        MKx1.25,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    ),
+    MK.1.5 = ifelse(
+      is.na(MK.1.5),
+      cell_spec(MK.1.5,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        MK.1.5,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    ),
+    MK.Then_nls = ifelse(
+      is.na(MK.Then_nls),
+      cell_spec(MK.Then_nls,
+                color = "grey",
+                background  = "grey"),
+      cell_spec(
+        MK.Then_nls,
+        background  = "green",
+        italic = T,
+        color = "white",
+        align = "center"
+      )
+    )
+  ) %>%
+  kable(escape = F) %>%
+  kable_styling("striped", full_width = F) %>%
+  column_spec(5, width = "3cm") %>%
+  add_header_above(c(" ",
+                     "L inf" = 2,
+                     "M/K" = 4)) 
+``` 
+
+El análisis de sensibilidad muestra una respuesta signifcativa de los resultados del método a cambios en el parámetro $L_{inf}$. Concretamente, valores de $K$ en el rango inferior (0.75 x $L_{inf}$) muestra mejoras en la percepción del estado del estock en diversos LBI: i) $L_{max5}/L_{inf}$; ii) $L_{mean}/L_{opt}$; ii) $L_{mean}/L_{F=M}$. También se observan mejoras notables en la percepción del stock en diversos LBI si aumentamos $M/K$ lo suficiente; en este caso observamos únicamente cambios en este sentido cuando el valor de referencia de $M$ lo aumentamos considerablemente (aumentando así el valor $M/K$) usando $M_{nls}/K^{LIT}$ = 3.1: i) $L_{mean}/L_{opt}$; i) $L_{mean}/L_{F=M}$.
+
+Elegir los parámetros biológicos adecuados se revela una decisión crítica a la hora de aplicar estas metodologías.
+
+
+# Bibliografía
+
+- Alonso-Fernández, A.; Domínguez-Petit, R.; Bao, M.; Rivas, C.; Saborido-Rey, F., 2008. Spawning pattern and reproductive strategy of female pouting Trisopterus luscus (Gadidae) on the Galician shelf of north-western Spain. Aquat Living Resour. 21, 383-393
+
+- Alonso-Fernández, A.; Otero, J.; Bañón, R.; Campelos, J.M.; Quintero, F.; Ribó, J.; Filgueira, F.; Juncal, L.; Lamas, F.; Gancedo, A.; Molares, J., 2019. Inferring abundance trends of key species from a highly developed small-scale fishery off NE Atlantic. Fish Res. 209, 101-116
+
+- Froese, R. 2004. Keep it simple: three indicators to deal with overfishing. Fish and Fisheries, 5 (1): 86-91.
+
+- ICES. 2015. Report of the Fifth Workshop on the Development of Quantitative Assessment Methodologies based on Life-history Traits, Exploitation Characteristics and other Relevant Parameters for Data-limited Stocks (WKLIFE V), 5-9 October 2015, Lisbon, Portugal. ICES CM 2015/ACOM:56.
+
+- ICES. 2018. ICES reference points for stocks in categories 3 and 4. ICES Technical Guidelines. Publicado 02/2018. disponible: <<http://ices.dk/sites/pub/Publication%20Reports/Guidelines%20and%20Policies/16.04.03.02_Category_3-4_Reference_Points.pdf>>
+
+- Labarta, U.; Ferreiro, M.J.; Fenandez, M.T.; Martinez, F., 1982 Spawning season and first maturity size and age of the Galician coast pouting (Trisopterus luscus L.). Council Meeting, 1982, of the International Council for the Exploration of the Sea, (Copenhagen (Denmark)), (11 Oct 1982). COPENHAGEN (DENMARK): ICES
+
+- Labarta, U.; Ferreiro, M.J.; Martinez, F.; Fernandez, M.T., 1982 Age and growth of the Galician coast pouting (Trisopterus luscus L.). Preliminary data. Council Meeting, 1982, of the International Council for the Exploration of the Sea, (Copenhagen (Denmark)), (11 Oct 1982). COPENHAGEN (DENMARK): ICES
+
+- Ogle, D. H. (2016). Introductory fisheries analyses with R (Vol. 32). CRC Press.
+
+- Prince, J.D., Hordyk, A.R., Valencia, S.R., Loneragan, N.R., and Sainsbury, K.J. 2015. Revisiting the concept of Beverton–Holt life-history invariants with the aim of informing data-poor fisheries assessment. ICES J. Mar. Sci. 72: 194 - 203.
+
+- Then, A.Y., J.M. Honeig, N.G. Hall, D.A. Hewitt. 2015. Evaluating the predictive performance of empirical estimators of natural mortality rate using information on over 200 fish species. ICES J. of Mar. Sci. 72(1); 82-92.

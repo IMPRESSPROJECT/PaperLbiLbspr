@@ -1,0 +1,193 @@
+---
+title: "LB-SPR sensivity analysis in sbr-SoG"
+author: "Juan Gil Herrera"
+date: "27/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading library
+
+```{r}
+library(LBSPR) 
+```
+
+
+Life history parameters
+
+M = 0.2 (just guessing)
+k= 0.14 (tag-recapture?)
+M/k=1.42 
+
+Linf=62 (largest sample)
+
+L50=33 (sexual transition)
+L95=35 (females L50)
+
+
+LB_pars object
+
+
+```{r}
+sbr1Pars <- new("LB_pars")
+sbr1Pars@Linf <- 62
+sbr1Pars@L50 <- 33 
+sbr1Pars@L95 <- 35
+sbr1Pars@MK <- 1.42 
+sbr1Pars@M <- 0.2 
+sbr1Pars@L_units <- "cm"
+```
+
+
+Length data
+
+```{r}
+sbrLenFreq1 <- new("LB_lengths", LB_pars=sbr1Pars, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq1@L_units <- sbr1Pars@L_units
+```
+
+
+1) Base scenario
+
+```{r}
+Fit1 <- LBSPRfit(sbr1Pars, sbrLenFreq1)
+```
+
+2) Alternate scenarios
+
+2a) M/k sensitivity
+
+Underestimate (M/k*0.75):
+
+```{r results="asis", warning=FALSE}
+sbr1ParsMK <-sbr1Pars
+sbr1ParsMK@MK <- 0.75*1.42
+
+sbrLenFreq1MK <- new("LB_lengths", LB_pars=sbr1ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq1MK@L_units <- sbr1ParsMK@L_units
+
+Fit1MK <- LBSPRfit(sbr1ParsMK, sbrLenFreq1MK)
+```
+
+Overestimate (M/k*1.25):
+
+```{r results="asis", warning=FALSE}
+sbr2ParsMK <-sbr1Pars
+sbr2ParsMK@MK <- 1.25*1.42
+
+sbrLenFreq2MK <- new("LB_lengths", LB_pars=sbr2ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq2MK@L_units <- sbr2ParsMK@L_units
+
+Fit2MK <- LBSPRfit(sbr2ParsMK, sbrLenFreq2MK)
+```
+
+Default value (M/k=1.5)
+
+```{r results="asis", warning=FALSE}
+sbr3ParsMK <-sbr1Pars
+sbr3ParsMK@MK <- 1.5
+
+sbrLenFreq3MK <- new("LB_lengths", LB_pars=sbr3ParsMK, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq3MK@L_units <- sbr3ParsMK@L_units
+
+Fit3MK <- LBSPRfit(sbr3ParsMK, sbrLenFreq3MK)
+```
+
+2a) Linf sensitivity
+
+Underestimate (Linf*0.75)
+
+```{r results="asis", warning=FALSE}
+sbr1ParsLinf <-sbr1Pars
+sbr1ParsLinf@Linf <- 62*0.75
+
+sbrLenFreq1Linf <- new("LB_lengths", LB_pars=sbr1ParsLinf, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq1Linf@L_units <- sbr1ParsLinf@L_units
+
+Fit1Linf <- LBSPRfit(sbr1ParsLinf, sbrLenFreq1Linf)
+```
+
+Overestimate (Linf*1.25)
+
+
+```{r results="asis", warning=FALSE}
+sbr2ParsLinf <-sbr1Pars
+sbr2ParsLinf@Linf <- 62*1.25
+
+sbrLenFreq2Linf <- new("LB_lengths", LB_pars=sbr2ParsLinf, file="LFreqSBR.csv", dataType="freq", header=TRUE)
+sbrLenFreq2Linf@L_units <- sbr2ParsLinf@L_units
+
+Fit2Linf <- LBSPRfit(sbr2ParsLinf, sbrLenFreq2Linf)
+```
+
+3) Summary
+
+SPR Figure
+
+```{r}
+smoothEsts1 <- data.frame(Fit1@Ests)
+smoothEsts1MK <- data.frame(Fit1MK@Ests)
+smoothEsts2MK <- data.frame(Fit2MK@Ests)
+smoothEsts3MK <- data.frame(Fit3MK@Ests)
+smoothEsts1Linf <- data.frame(Fit1Linf@Ests)
+smoothEsts2Linf <- data.frame(Fit2Linf@Ests)
+
+spr1=Fit1@SPR
+sprmk1=Fit1MK@SPR
+sprmk2=Fit2MK@SPR
+sprmk3=Fit3MK@SPR
+sprL1=Fit1Linf@SPR
+sprL2=Fit2Linf@SPR
+
+plot(1997:2019,spr1,ylim=c(0,0.20),xlab="Years",ylab="SPR estimates",pch=19)
+
+lines(1997:2019, smoothEsts1$SPR, lwd = 1,col="black")
+lines(1997:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
+lines(1997:2019, smoothEsts2MK$SPR, lwd = 1,col=3)
+lines(1997:2019, smoothEsts3MK$SPR, lwd = 1,col=4)
+lines(1997:2019, smoothEsts1Linf$SPR, lwd = 1,col=5)
+lines(1997:2019, smoothEsts2Linf$SPR, lwd = 1,col=6)
+
+points(1997:2019, sprmk1,col=2,pch=19)
+points(1997:2019, sprmk2,col=3,pch=19)
+points(1997:2019, sprmk3,col=4,pch=19)
+points(1997:2019, sprL1,col=5,pch=19)
+points(1997:2019, sprL2,col=6,pch=19)
+
+legend("topright", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=19, cex=0.8)
+```
+
+F/M Figure
+
+```{r}
+
+fm1=Fit1@FM
+fmmk1=Fit1MK@FM
+fmmk2=Fit2MK@FM
+fmmk3=Fit3MK@FM
+fmL1=Fit1Linf@FM
+fmL2=Fit2Linf@FM
+
+plot(1997:2019,fm1,ylim=c(0.8,6.3),xlab="Years",ylab="F/M estimates",pch=19)
+
+lines(1997:2019, smoothEsts1$FM, lwd = 1,col="black")
+lines(1997:2019, smoothEsts1MK$FM, lwd = 1,col=2)
+lines(1997:2019, smoothEsts2MK$FM, lwd = 1,col=3)
+lines(1997:2019, smoothEsts3MK$FM, lwd = 1,col=4)
+lines(1997:2019, smoothEsts1Linf$FM, lwd = 1,col=5)
+lines(1997:2019, smoothEsts2Linf$FM, lwd = 1,col=6)
+
+points(1997:2019, fmmk1,col=2,pch=19)
+points(1997:2019, fmmk2,col=3,pch=19)
+points(1997:2019, fmmk3,col=4,pch=19)
+points(1997:2019, fmL1,col=5,pch=19)
+points(1997:2019, fmL2,col=6,pch=19)
+
+legend("topleft", legend=c("BASE", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=19, cex=0.8)
+```
+

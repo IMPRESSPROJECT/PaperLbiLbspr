@@ -1,0 +1,239 @@
+---
+title: "LB-SPR"
+author: "Yolanda Vila Gordillo"
+date: "26/08/2020"
+output: html_document
+ 
+case: NepFU2627_Males
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## LB-SPR Análisis de Sensibilidad
+
+
+Empezamos cargando la librería.
+
+```{r}
+library(LBSPR) 
+```
+
+
+###Usamos los datos para Nephrops FU2627 de los machos
+
+Los datos del ciclo vital recogidos de la literatura son (en base a LH Invariants analysis):
+
+${M/k}^{LIT}$=2 
+
+$L_{inf}^{LIT}$=80
+
+M = 0.3
+
+L50=28 
+
+L95=32.2 
+
+
+Con la información anterior creamos un objecto "LB_pars".
+
+
+```{r}
+Nepmales1Pars <- new("LB_pars")
+Nepmales1Pars@Linf <- 80
+Nepmales1Pars@L50 <- 28 
+Nepmales1Pars@L95 <- 32.2
+Nepmales1Pars@MK <- 2 
+Nepmales1Pars@M <- 0.3 
+Nepmales1Pars@L_units <- "mm"
+```
+
+
+Para poder aplicar el método necesitamos leer el archivo csv con las frecuencias de tallas y crear con dicha información un objecto "LB_lengths".
+
+```{r}
+NepmalesLenFreq1 <- new("LB_lengths", LB_pars=Nepmales1Pars, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq1@L_units <- Nepmales1Pars@L_units
+```
+
+
+A partir de la informacón creada ya podemos aplicar nuestro modelo. 
+
+
+El *ESCENARIO DE REFERENCIA* es el que utiliza los parámetros descritos con anterioridad es decir el que usa ${M/k}^{LIT}$ y
+$L_{inf}^{LIT}$. Los resultados derivados de modificaciones en los valores de $L_{inf}$ y ${M/k}$ se compararan siempre con este escenario que es el que usaríamos en caso de no estar interesados en ver la sensibilidad del método a la correcta especificación de los mismos.
+
+```{r}
+Fit1 <- LBSPRfit(Nepmales1Pars, NepmalesLenFreq1)
+```
+
+
+En las siguientes secciones vemos los resultamos considerando modificaciones de dichos parámetros.
+
+## ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO @MK
+
+1. Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+Nepmales1ParsMK <-Nepmales1Pars
+Nepmales1ParsMK@MK <- 0.75*2
+
+
+NepmalesLenFreq1MK <- new("LB_lengths", LB_pars=Nepmales1ParsMK, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq1MK@L_units <- Nepmales1ParsMK@L_units
+
+
+Fit1MK <- LBSPRfit(Nepmales1ParsMK, NepmalesLenFreq1MK)
+```
+
+2. Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+```{r results="asis", warning=FALSE}
+Nepmales2ParsMK <-Nepmales1Pars
+Nepmales2ParsMK@MK <- 1.25*2
+
+
+NepmalesLenFreq2MK <- new("LB_lengths", LB_pars=Nepmales2ParsMK, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq2MK@L_units <- Nepmales2ParsMK@L_units
+
+
+Fit2MK <- LBSPRfit(Nepmales2ParsMK, NepmalesLenFreq2MK)
+```
+
+3. Tercero usando el valor por defecto de 1.5.
+
+```{r results="asis", warning=FALSE}
+Nepmales3ParsMK <-Nepmales1Pars
+Nepmales3ParsMK@MK <- 1.5
+
+NepmalesLenFreq3MK <- new("LB_lengths", LB_pars=Nepmales3ParsMK, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq3MK@L_units <- Nepmales3ParsMK@L_units
+
+
+Fit3MK <- LBSPRfit(Nepmales3ParsMK, NepmalesLenFreq3MK)
+```
+
+## ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO @Linf
+
+
+
+1. Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+
+```{r results="asis", warning=FALSE}
+Nepmales1ParsLinf <-Nepmales1Pars
+Nepmales1ParsLinf@Linf <- 0.75*80 
+
+NepmalesLenFreq1Linf <- new("LB_lengths", LB_pars=Nepmales1ParsLinf, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq1Linf@L_units <- Nepmales1ParsLinf@L_units
+
+
+Fit1Linf <- LBSPRfit(Nepmales1ParsLinf, NepmalesLenFreq1Linf)
+```
+
+2. Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+
+```{r results="asis", warning=FALSE}
+Nepmales2ParsLinf <-Nepmales1Pars
+Nepmales2ParsLinf@Linf <- 1.25*80
+
+NepmalesLenFreq2Linf <- new("LB_lengths", LB_pars=Nepmales2ParsLinf, file="FU2627_tallasMales_1988_2019_2.csv", dataType="freq", header=TRUE)
+NepmalesLenFreq2Linf@L_units <- Nepmales2ParsLinf@L_units
+
+
+Fit2Linf <- LBSPRfit(Nepmales2ParsLinf, NepmalesLenFreq2Linf)
+```
+
+## RESUMEN DE LA INFORMACIÓN
+
+Crearemos dos gráficos en los cuales veremos las estimaciones de F/M y de SPR para los diferentes escenarios.
+
+
+Gráfico SPR:
+
+
+```{r}
+
+smoothEsts1 <- data.frame(Fit1@Ests)
+smoothEsts1MK <- data.frame(Fit1MK@Ests)
+smoothEsts2MK <- data.frame(Fit2MK@Ests)
+smoothEsts3MK <- data.frame(Fit3MK@Ests)
+smoothEsts1Linf <- data.frame(Fit1Linf@Ests)
+smoothEsts2Linf <- data.frame(Fit2Linf@Ests)
+
+
+spr1=Fit1@SPR
+sprmk1=Fit1MK@SPR
+sprmk2=Fit2MK@SPR
+sprmk3=Fit3MK@SPR
+sprL1=Fit1Linf@SPR
+sprL2=Fit2Linf@SPR
+
+
+
+plot(1988:2019,spr1,ylim=c(0,1),xlab="Years",ylab="SPR estimates",pch=19)
+
+lines(1988:2019, smoothEsts1$SPR, lwd = 1,col="black")
+lines(1988:2019, smoothEsts1MK$SPR, lwd = 1,col=2)
+lines(1988:2019, smoothEsts2MK$SPR, lwd = 1,col=3)
+lines(1988:2019, smoothEsts3MK$SPR, lwd = 1,col=4)
+lines(1988:2019, smoothEsts1Linf$SPR, lwd = 1,col=5)
+lines(1988:2019, smoothEsts2Linf$SPR, lwd = 1,col=6)
+
+
+points(1988:2019, sprmk1,col=2,pch=19)
+points(1988:2019, sprmk2,col=3,pch=19)
+points(1988:2019, sprmk3,col=4,pch=19)
+points(1988:2019, sprL1,col=5,pch=19)
+points(1988:2019, sprL2,col=6,pch=19)
+
+legend("topright", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=19, cex=0.8)
+```
+
+
+Gráfico F/M:
+
+
+
+```{r}
+
+fm1=Fit1@FM
+fmmk1=Fit1MK@FM
+fmmk2=Fit2MK@FM
+fmmk3=Fit3MK@FM
+fmL1=Fit1Linf@FM
+fmL2=Fit2Linf@FM
+
+plot(1988:2019,fm1,ylim=c(0,6.3),xlab="Years",ylab="F/M estimates",pch=19)
+
+lines(1988:2019, smoothEsts1$FM, lwd = 1,col="black")
+lines(1988:2019, smoothEsts1MK$FM, lwd = 1,col=2)
+lines(1988:2019, smoothEsts2MK$FM, lwd = 1,col=3)
+lines(1988:2019, smoothEsts3MK$FM, lwd = 1,col=4)
+lines(1988:2019, smoothEsts1Linf$FM, lwd = 1,col=5)
+lines(1988:2019, smoothEsts2Linf$FM, lwd = 1,col=6)
+
+
+points(1988:2019, fmmk1,col=2,pch=19)
+points(1988:2019, fmmk2,col=3,pch=19)
+points(1988:2019, fmmk3,col=4,pch=19)
+points(1988:2019, fmL1,col=5,pch=19)
+points(1988:2019, fmL2,col=6,pch=19)
+
+legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf","1.25*Linf"),
+       col=c("black", 2:6), pch=19, cex=0.8)
+```
+
+#para plotear selectivity, F/M, SP
+```{r}
+plotEsts(Fit2Linf)
+```
+
+
+
+
+
+

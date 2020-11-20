@@ -1,0 +1,126 @@
+---
+title: "LBI Análisis de Sensibilidad - FU 25 - FEMALES"
+author: "Isabel González Herraiz"
+date: "20/10/2020"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Empezamos cargando librerías y ficheros necesarios (son los empleados en el taller realizado en la reunión del proyecto Impress). Descomentar las líneas de rJava en caso de no tenerlo instalado.
+
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+library(tidyverse)
+
+# require (rJava)
+# .jinit()
+# .jcall('java.lang.System','S','getProperty','java.version')
+# [1] "1.8.0_211"
+# devtools::install_github('davidgohel/ReporteRsjars')
+# devtools::install_github('davidgohel/ReporteRs')
+```
+
+ 
+
+```{r results='hide', message=FALSE, warning=FALSE}
+library(LBSPR) 
+library(reshape2)
+library(ggplot2) 
+library(tidyr)
+library(ReporteRs) 
+source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R") 
+source("utilities_vpaz.R") 
+```
+
+Usamos el conjunto de datos del taller como ejemplo (stock sur de Abadejo (pol89a)).
+
+
+Ahora para la cigala FU 25 females. Los datos del ciclo vital recogidos de la literatura son:
+
+$L_{mat}^{LIT}$ = 28.0 mm. Females (Fariña, 1996). Creo que tesis Celso.    
+
+$L_{inf}^{LIT}$ = 71.0 mm. Females (Distribución de tallas, 2010).     
+
+${M/k}^{LIT}$ = 1.9 (Prince, 2015).
+
+
+Para poder aplicar el método nos faltan los  datos de composición de talla del desembarco y el peso medio por talla. Lo cargamos a continuación.
+  
+```{r  message=FALSE, warning=FALSE}
+
+wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
+freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
+
+```
+
+Los datos de frecuencia de tallas no necesitan agruparse, por tanto usando binwidth=1 como vimos en el taller.
+
+El escenario de **REFERENCIA EN NUESTRO ESTUDIO** es el siguiente usando $L_{inf}^{LIT}$ y ${M/k}^{LIT}$. Los resultados derivados de modificaciones en los valores de $L_{inf}$ y ${M/k}$ se compararan siempre con este escenario que es el que usaríamos en caso de no estar interesados en ver la sensibilidad del método a la correcta especificación de los mismos.
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
+```
+
+En las siguientes secciones vemos los resultamos considerando modificaciones de dichos parámetros.
+
+### ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO mk_ratio
+
+1. Primero infraestimando (${M/k}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=0.75*1.9,wal)
+```
+
+2. Segundo sobrestimando (${M/k}^{LIT}$ multiplicado por 1.25):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=1.25*1.9,wal)
+```
+
+3. Tercero usando el valor por defecto de 1.5.
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "m", linf=71.0, lmat=28.0, mk_ratio=1.5,wal)
+```
+
+
+### ESCENARIOS MODIFICADOS USANDO LOS DIFERENTES VALORES PARA EL PARÁMETRO linf
+
+1. Primero infraestimando ($L_{inf}^{LIT}$ multiplicado por 0.75):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=0.75*71.0, lmat=28.0, mk_ratio=1.9,wal)
+```
+
+2. Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25):
+
+```{r results="asis", warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=1.25*71.0, lmat=28.0, mk_ratio=1.9,wal)
+```
+
+
+## TABLA RESUMEN DE LOS RESULTADOS
+
+Para sacar conclusiones del estudio realizado necesitamos resumir toda la información en una única tabla.
+
+## Debemos indicar para cada año y escenario si algún indicador a cambiado su color con respecto al escenario de referencia. Si ha cambiado debemos escribir su nombre en la tabla en el color al que ha cambiado.
+
+
+**Años** | 0.75* ${M/k}^{LIT}$| 1.25* ${M/k}^{LIT}$| 0.75*$L_{inf}^{LIT}$| 1.25*$L_{inf}^{LIT}$| M/k=1.5
+----------------------| ----------------------|----------------------| ----------------------|----------------------|----------------------|
+*2010* no se hizo la tabla
+
+
+
+## Bibliografía
+
+Alemany, J. 2017. Développement d'un cadre Bayésien pour l'évaluation de stocks à données limitées et élaboration de scénarios de gestion, cas particuliers de la seiche (Sepia officinalis) et du lieu jaune (Pollachius pollachius). Ph.D. Thesis. Université Caen Normandie. 262 pp.
+
+Alonso-Fernández A., Villegas-Rios, D., Valdés-López, M., Olveira-Rodríguez, B. and Saborido-Rey, F. (2013). Reproductive biology of pollack (Pollachius pollachius) from the Galician shelf (north-west Spain). Journal of the Marine Biological Association of the United Kingdom, 2013, 93(7): 1951-1963.
