@@ -209,6 +209,11 @@ points(1982:2019, sprmk3,col=4,pch=19)
 points(1982:2019, sprL1,col=5,pch=19)
 points(1982:2019, sprL2,col=6,pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
+
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -235,7 +240,6 @@ points(1982:2019, fmmk2,col=3,pch=19)
 points(1982:2019, fmmk3,col=4,pch=19)
 points(1982:2019, fmL1,col=5,pch=19)
 points(1982:2019, fmL2,col=6,pch=19)
-
 
 
 
@@ -354,7 +358,11 @@ points(1982:2019, sprL1,col=5,pch=19)
 points(1982:2019, sprL2,col=6,pch=19)
 
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
 
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 
 fm1=Fit1@FM
@@ -382,7 +390,6 @@ points(1982:2019, fmmk2,col=3,pch=19)
 points(1982:2019, fmmk3,col=4,pch=19)
 points(1982:2019, fmL1,col=5,pch=19)
 points(1982:2019, fmL2,col=6,pch=19)
-
 
 
 ## Norway Loster 8c FU2627 Males and Females
@@ -478,6 +485,11 @@ points(1988:2019, sprmk2,col=3,pch=19)
 points(1988:2019, sprL1,col=5,pch=19)
 points(1988:2019, sprL2,col=6,pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
+
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -501,6 +513,7 @@ points(1988:2019, fmmk1,col=2,pch=19)
 points(1988:2019, fmmk2,col=3,pch=19)
 points(1988:2019, fmL1,col=5,pch=19)
 points(1988:2019, fmL2,col=6,pch=19)
+
 
 
 
@@ -604,6 +617,11 @@ points(1988:2019, sprmk3,col=4,pch=19)
 points(1988:2019, sprL1,col=5,pch=19)
 points(1988:2019, sprL2,col=6,pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
+
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 
 fm1=Fit1@FM
@@ -630,6 +648,7 @@ points(1988:2019, fmmk2,col=3,pch=19)
 points(1988:2019, fmmk3,col=4,pch=19)
 points(1988:2019, fmL1,col=5,pch=19)
 points(1988:2019, fmL2,col=6,pch=19)
+
 
 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
@@ -726,6 +745,11 @@ points(2014:2019, sprmk2,col=3,pch=19)
 points(2014:2019, sprL1,col=5,pch=19)
 points(2014:2019, sprL2,col=6,pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
+
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -811,7 +835,7 @@ HkeLenFreq1Linf@L_units <- Hke1ParsLinf@L_units
 
 Fit1Linf <- LBSPRfit(Hke1ParsLinf, HkeLenFreq1Linf,verbose = FALSE)
 
-# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25) aumentando la length hasta 24 y llenando con ceros para que no salga el error más adelante :
+# Segundo sobrestimando ($L_{inf}^{LIT}$ multiplicado por 1.25) aumentando la length hasta 24 y llenando con ceros para que no salga el error m?s adelante :
 
 Hke2ParsLinf <-Hke1Pars
 Hke2ParsLinf@Linf <- 1.25*LINF
@@ -864,7 +888,11 @@ points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprmk3,col=4,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprL1,col=5,pch=19)
 points(HkeLenFreq2Linf@Years[1]:HkeLenFreq2Linf@Years[32], sprL2,col=6,pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
 
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 
 fm1=Fit1@FM
@@ -903,7 +931,7 @@ Pol1 <- new("LB_pars")
 Pol1@Linf <- 98.2 
 Pol1@CVLinf <- 0.1 # by default
 Pol1@L50 <- 42.3
-Pol1@L95 <- 59 # estimated from figure (Alonso-Fernández etal, 2013)
+Pol1@L95 <- 59 # estimated from figure (Alonso-Fern?ndez etal, 2013)
 Pol1@MK <- 0.3/0.182
 Pol1@M <- 0.3 
 Pol1@SL50 <- 47.5
@@ -992,7 +1020,11 @@ points(2010:2019, sprmk2,col=3,pch=19)
 points(2010:2019, sprmk3,col=4,pch=19)
 points(2010:2019, sprL1,col=5,pch=19)
 points(2010:2019, sprL2,col=6, pch=19)
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
 
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 
 fm1=Fit1@FM
@@ -1124,7 +1156,11 @@ points(1997:2019, sprmk2,col=3,pch=19)
 points(1997:2019, sprmk3,col=4,pch=19)
 points(1997:2019, sprL1,col=5,pch=19)
 points(1997:2019, sprL2,col=6,pch=19)
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
 
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 fm1=Fit1@FM
 fmmk1=Fit1MK@FM
@@ -1168,7 +1204,7 @@ LHTs$MKlit2 <- 1.761846
 LHTs$MK <- 1.5
 
 # 95% probability mature
-# Alonso-Fernánde et al. 2008: Pmat = a+bxTL
+# Alonso-Fern?nde et al. 2008: Pmat = a+bxTL
 a <- -25.77
 b <- 1.34
 L95 <- (log(0.95/0.05)-a)/b
@@ -1269,7 +1305,11 @@ points(1999:2018, sprmk3,col=4,pch=19)
 points(1999:2018, sprL1,col=5,pch=19)
 points(1999:2018, sprL2,col=6, pch=19)
 
+abline(h=0.4,lty=3)
+abline(h=0.35,lty=3)
 
+abline(h=0.1,lty=2)
+abline(h=0.15,lty=2)
 
 min=min(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
 max=max(c(fm1,fmmk1,fmmk2,fmmk3,fmL1,fmL2))
