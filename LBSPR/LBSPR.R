@@ -1,14 +1,14 @@
 
 ## Norway Loster 8c FU25 Males and Females
 
+library(jpeg)
 
 ### Norway Loster 8c FU25 Males
 
-par(mfcol=c(2,4))
-
 library(LBSPR) 
 
-
+jpeg("LBSPR1.jpeg", width = 3200, height = 2700, res = 300)
+par(oma = c(4,2,2,2), mfcol = c(2, 4))
 Hke1Pars <- new("LB_pars")
 Hke1Pars@Linf <- 86
 Hke1Pars@L50 <- 25
@@ -632,10 +632,16 @@ points(1988:2019, fmL1,col=5,pch=19)
 points(1988:2019, fmL2,col=6,pch=19)
 
 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+legend('bottom',legend=c("REFERENCE", "0.75*M/k","1.25*M/k","M/k=1.5","0.75*L_inf","1.25*L_inf"),col=c("black", 2,3,4,5,6), lwd = 5, xpd = TRUE, horiz = TRUE, cex = 1.2, seg.len=1, bty = 'n')
+
+dev.off()
 
 ## Small Spotted Catshark
 
-
+jpeg("LBSPR2.jpeg", width = 3700, height = 3200, res = 300)
+par(oma = c(4,2,2,2), mfcol = c(2, 5))
 
 PinPars <- new("LB_pars")
 PinPars@Linf <- 75
@@ -1284,3 +1290,8 @@ points(1999:2018, fmmk3,col=4,pch=19)
 points(1999:2018, fmL1,col=5,pch=19)
 points(1999:2018, fmL2,col=6,pch=19)
 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+legend('bottom',legend=c("REFERENCE", "0.75*M/k","1.25*M/k","M/k=1.5","0.75*L_inf","1.25*L_inf"),col=c("black", 2,3,4,5,6), lwd = 5, xpd = TRUE, horiz = TRUE, cex = 1.2, seg.len=1, bty = 'n')
+
+dev.off()
