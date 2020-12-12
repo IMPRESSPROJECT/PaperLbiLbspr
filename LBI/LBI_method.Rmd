@@ -1,0 +1,652 @@
+---
+title: "LBI method: Assessing the sensitivity of length-indicator methods for resources in the Atlantic waters"
+author: ""
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Nephrops norvegicus FU25
+
+## Nephrops norvegicus FU25 Males
+
+
+```{r Table1, warning=FALSE, message=FALSE, echo=FALSE,include=FALSE}
+library(kableExtra)
+library(tidyverse)
+
+# require (rJava)
+# .jinit()
+# .jcall('java.lang.System','S','getProperty','java.version')
+# [1] "1.8.0_211"
+# devtools::install_github('davidgohel/ReporteRsjars')
+# devtools::install_github('davidgohel/ReporteRs')
+library(LBSPR) 
+library(reshape2)
+library(ggplot2) 
+library(tidyr)
+library(ReporteRs) 
+source("https://raw.githubusercontent.com/ices-tools-dev/LBIndicator_shiny/master/utilities.R") 
+source("utilities_vpaz.R") 
+```
+
+Life history parameters:
+
+$L_{mat}$ = 25.0 mm. 
+$L_{inf}^{LIT}$ = 86.0 mm. 
+${M/k}^{LIT}$ = 1.9. 
+
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+```{r  message=FALSE, warning=FALSE}
+
+wal <- read.csv("25_Males_w.csv", stringsAsFactors = FALSE)
+head(wal)
+freq <- read.csv("25_Males.csv",  stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 1, "mm")
+
+```
+
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 1.
+
+Reference model:
+
+  
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf = 86.0 , lmat = 25.0 , mk_ratio = 1.90 ,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=86.0, lmat=25.0, mk_ratio=0.75*1.9,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=86.0, lmat=25.0, mk_ratio=1.25*1.9,wal)
+
+```
+
+M/k=1.5.
+ 
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "m", linf=86.0, lmat=25.0, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=0.75*86.0, lmat=25.0, mk_ratio=1.9,wal)
+```
+
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=1.25*86.0, lmat=25.0, mk_ratio=1.9,wal)
+```
+
+
+
+## Nephrops norvegicus FU25 Females
+Life history parameters:
+  
+$L_{mat}$ = 28.0 mm. 
+$L_{inf}^{LIT}$ = 71.0 mm. 
+${M/k}^{LIT}$ = 1.9.
+
+
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+```{r  message=FALSE, warning=FALSE}
+
+wal <- read.csv("25_Females_w.csv", stringsAsFactors = FALSE)
+freq <- read.csv("25_Females.csv",  stringsAsFactors = FALSE)
+head(wal)
+head(freq)
+bin_plot(freq, 1, "mm")
+```
+
+On based on the previous plots of the length distribution 
+  BinWidth is fixed equal to 1.
+  
+Reference model:
+  
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf = 71.0 , lmat = 28.0 , mk_ratio = 1.90 ,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=0.75*1.9,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=71.0, lmat=28.0, mk_ratio=1.25*1.9,wal)
+```
+
+M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "m", linf=71.0, lmat=28.0, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=0.75*71.0, lmat=28.0, mk_ratio=1.9,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "mm", linf=1.25*71.0, lmat=28.0, mk_ratio=1.9,wal)
+```
+
+
+# Nephrops norvegicus FU2627 
+
+## Nephrops norvegicus FU2627 Males 
+
+Life history parameters:
+  
+  $L_{mat}$ = 28.0 mm. 
+  $L_{inf}^{LIT}$ = 80.0 mm. 
+  ${M/k}^{LIT}$ = 2. 
+  
+  Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+
+
+  
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("FU2627_PesosMales_1988_2019_medio.csv", stringsAsFactors = FALSE)
+freq <- read.csv("FU2627_tallasMales_1988_2019.csv", stringsAsFactors = FALSE)
+head(freq)
+head(wal)
+bin_plot(freq, 1, "mm")
+bin_plot(freq, 2, "mm")
+```
+
+On based on the previous plots of the length distribution 
+  BinWidth is fixed equal to 2.
+
+
+Reference model:
+ 
+ 
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=2,wal)
+
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=0.75*2,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=1.25*2,wal)
+```
+
+M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=80, lmat=28, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=0.75*80, lmat=28, mk_ratio=2,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=1.25*80, lmat=28, mk_ratio=2,wal)
+```
+
+
+
+## Nephrops norvegicus FU2627 Females
+
+Life history parameters:
+  
+  $L_{mat}$ = 26.0 mm. 
+  $L_{inf}^{LIT}$ = 65.0 mm. 
+  ${M/k}^{LIT}$ = 2.5 
+  
+  Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("FU2627_PesosFemales_1988_2019_medio.csv", stringsAsFactors = FALSE)
+freq <- read.csv("FU2627_tallasFemales_1988_2019.csv", stringsAsFactors = FALSE)
+head(freq)
+head(wal)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+```
+  
+  
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 2.
+
+Reference model:
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=2.5,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=0.75*2.5,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.25*2.5,wal)
+```
+
+M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=65, lmat=26, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=0.75*65, lmat=26, mk_ratio=2.5,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "mm", linf=1.25*65, lmat=26, mk_ratio=2.5,wal)
+```
+
+# Galeus melastomus
+
+Life history parameters:
+  
+  $L_{mat}$ = 54.2 cm. 
+  $L_{inf}^{LIT}$ = 75.0 cm. 
+  ${M/k}^{LIT}$ = 1.5. 
+  
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("Pin8c9awal.csv",sep=",")
+head(wal)
+freq <- read.csv("Pin8c9afreq.csv", stringsAsFactors = FALSE)
+head(freq)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+```
+
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 1.
+  
+Reference model:
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=1.5,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=0.75*1.5,wal)
+```
+
+Overestimated ${M/k}^{LIT}$
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=75.0, lmat=54.2, mk_ratio=1.25*1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=0.75*75.0, lmat=54.2, mk_ratio=1.5,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=1.25*75.0, lmat=54.2, mk_ratio=1.5,wal)
+```
+
+# Engraulis encrasicolus
+
+Life history parameters:
+  
+  $L_{mat}$ = 11.2 cm
+  $L_{inf}^{LIT}$ = 18.95 cm. 
+  ${M/k}^{LIT}$ = 1.44.
+  
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+
+
+```{r  message=FALSE, warning=FALSE}
+MK<-1.44
+Linf<-18.95
+Lmat<-11.2
+wal <- read.csv("wal_anchovy_fv.csv", stringsAsFactors = FALSE)
+freq <- read.csv("lengthfreq_anchovy_fv.csv", stringsAsFactors = FALSE)
+head(freq)
+head(wal)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+```
+
+On based on the previous plots of the length distribution 
+  BinWidth is fixed equal to 2.
+  
+Reference model:  
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+
+```
+
+ M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+
+
+```
+
+
+# Pollachius pollachius
+
+
+Life history parameters:
+  
+  $L_{mat}$ = 42.3 cm. 
+  $L_{inf}^{LIT}$ = 98.2 cm. 
+  ${M/k}^{LIT}$ = 1.648352. 
+  
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+
+```{r  message=FALSE, warning=FALSE}
+freq <- read.csv("Pol89afreq.csv", stringsAsFactors = FALSE)
+head(freq)
+wal <- read.csv("Pol89awal.csv", stringsAsFactors = FALSE)
+head(wal)
+bin_plot(freq, 4, "cm")
+```
+
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 4.
+
+Reference model:
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.648352,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=0.75*1.648352,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.25*1.648352,wal)
+```
+
+M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=98.2, lmat=42.3, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=0.75*98.2, lmat=42.3, mk_ratio=1.648352,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 4, "cm", linf=1.25*98.2, lmat=42.3, mk_ratio=1.648352,wal)
+```
+
+# Pagellus bogaraveo
+
+Life history parameters:
+  
+  $L_{mat}$ = 33 cm. 
+  $L_{inf}^{LIT}$ = 62 cm. 
+  ${M/k}^{LIT}$ = 1.42. 
+  
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+
+
+```{r  message=FALSE, warning=FALSE}
+wal <- read.csv("SBR9_mw.csv", stringsAsFactors = FALSE)
+freq <- read.csv("SBR9_numbers.csv", stringsAsFactors = FALSE)
+Linf<-62
+Lmat<-33
+MK<-1.42
+
+head(freq)
+head(wal)
+bin_plot(freq, 1, "cm")
+bin_plot(freq, 2, "cm")
+```
+
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 1.
+  
+Reference model:
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK ,wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*0.75,wal)
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=MK*1.25,wal)
+```
+
+M/k=1.5.
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf, lmat=Lmat, mk_ratio=1.5,wal)
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf*0.75, lmat=Lmat, mk_ratio=MK,wal)
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+
+```{r  message=FALSE, warning=FALSE}
+lb_tableSH(freq, 2, "cm", linf=Linf*1.25, lmat=Lmat, mk_ratio=MK,wal)
+```
+
+# Trisopterus luscus
+
+Life history parameters:
+  
+  $L_{mat}$ = 19.2 cm. 
+  $L_{inf}^{LIT}$ = 46.7 cm. 
+  ${M/k}^{LIT}$ = 1.761846. 
+  
+Below, catch/landings at length per year and  mean weights-at-length per year are loaded.
+  
+
+```{r message=FALSE, warning=FALSE}
+
+LHTs <- data.frame(t(c("Trisopterus luscus", 19.2, 1, 46.7, 0.21, 1.27, 9)))
+colnames(LHTs) <- c("Sp", "L50", "A50", "Linf", "K", "t0", "Amax")
+
+LHTs$MKvbgf <- 1.761846
+LHTs$MKnls <- 3.111105
+LHTs$MK <- 1.5
+
+library(readr)
+faneca <- read_csv("faneca_ieo.csv")
+sizeDat <- na.omit(faneca %>%
+                    select(TLength, Year))
+anho <- as.character(unique(sort(faneca$Year)))
+sizeDat <- data.frame(sizeDat)
+br = seq(min(sizeDat$TLength), max(sizeDat$TLength) + 1, by = 1)
+ranges = paste(head(br, -1), br[-1], sep = " - ")
+
+sizeDat <- unstack(sizeDat)
+
+freq <- data.frame(matrix(NA, nrow = length(br)-1, ncol = length(anho)+1))
+
+for (i in 1:length(anho)) {
+  freq[, 1] <- head(br, -1)
+  freq[, i + 1] <-
+    hist(
+      sizeDat[[i]],
+      breaks = br - 1,
+      include.lowest = TRUE,
+      plot = FALSE
+    )$counts
+  colnames(freq) <- c("MeanLength", anho)
+}
+
+freq[,1]=seq(10.5,43.5)
+br=seq(10.5,43.5)
+head(freq)
+
+alfaWL=0.01303439
+betaWL=2.969518
+
+wal <- freq
+for (i in 2:dim(freq)[2]) {
+  wal[, i] <- alfaWL * ((br) ^ betaWL)
+}
+colnames(wal) <- c("MeanLength", anho)
+head(wal)
+bin_plot(freq, 1, "cm")
+```
+
+On based on the previous plots of the length distribution 
+BinWidth is fixed equal to 1.
+  
+Reference model:
+
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1, "cm", 46.7 , 19.2, 1.761846, wal)
+```
+
+Underestimated ${M/k}^{LIT}$.
+
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 0.75*1.761846, wal)
+
+```
+
+Overestimated ${M/k}^{LIT}$.
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 1.25*1.761846, wal)
+
+```
+
+
+M/k=1.5.
+
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1,"cm",46.7 , 19.2, 1.5, wal)
+
+```
+
+Underestimated $L_{inf}^{LIT}$.
+
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1,"cm",0.75*46.7 , 19.2, 1.761846, wal)
+
+```
+
+Overestimated $L_{inf}^{LIT}$.
+
+
+```{r message=FALSE, warning=FALSE}
+lb_tableSH(freq, 1,"cm",1.25*46.7 , 19.2, 1.761846, wal)
+
+```
