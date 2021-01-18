@@ -831,7 +831,7 @@ legend("topleft", legend=c("REFERENCIA", "0.75*MK","1.25*MK","MK=1.5","0.75*Linf
 ```
 
 
-# Galeus melastomus
+# Scyliorhinus canicula
 
 Life history parameters:
   

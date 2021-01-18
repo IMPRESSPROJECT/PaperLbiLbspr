@@ -291,7 +291,7 @@ Overestimated $L_{inf}^{LIT}$.
 lb_tableSH(freq, 2, "mm", linf=1.25*65, lmat=26, mk_ratio=2.5,wal)
 ```
 
-# Galeus melastomus
+# Scyliorhinus canicula
 
 Life history parameters:
   
